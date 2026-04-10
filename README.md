@@ -76,6 +76,8 @@
 
 - **🎯 Dynamic Resume Generation** — Create professional resumes instantly with a clean, modern interface
 - **🔗 Unique Shareable Links** — Get a unique URL for each resume to share with recruiters effortlessly
+- **📄 Download as PDF** — Export your resume as a professionally formatted PDF document (A4 size)
+- **📝 Download as DOCX** — Export your resume as a Microsoft Word document for further editing
 - **📧 Email Sharing** — Share your resume directly via email with pre-formatted messages
 - **📥 Download as HTML** — Export your resume as an HTML file for offline use
 - **🖨️ Print Ready** — Print your resume directly from the browser with optimized formatting
@@ -85,6 +87,49 @@
 - **👀 Demo Mode** — Try the app instantly with pre-filled sample data
 - **🗑️ Clear Form** — Reset all fields with a single click
 - **🌐 No Backend Required** — Completely client-side application for maximum privacy
+
+---
+
+## 📥 Download Options
+
+Resume Builder Pro offers **multiple export formats** to suit your needs:
+
+### 📄 PDF Download
+- **Format:** A4-sized PDF document
+- **Library:** html2pdf.js (html2canvas + jsPDF)
+- **Use Case:** Professional sharing, printing, emailing
+- **Features:** 
+  - Preserves exact HTML formatting with bullets and spacing
+  - Proper margins (15mm all sides)
+  - Multi-page support for long resumes
+  - High-quality output (2x resolution)
+  - Professional bullet points and section headings
+  - Page break optimization
+
+### 📝 DOCX Download
+- **Format:** Microsoft Word document (.docx)
+- **Library:** docx.js + FileSaver.js
+- **Use Case:** Further editing, custom formatting
+- **Features:**
+  - Editable in Word, Google Docs, LibreOffice
+  - Preserves headings and structure
+  - Bullet points for easy reading
+  - Compatible with all major word processors
+
+### 📥 HTML Download
+- **Format:** HTML file
+- **Use Case:** Web hosting, offline viewing
+- **Features:**
+  - Opens in any browser
+  - Can be hosted anywhere
+  - Preserves all styling
+
+### 🖨️ Print
+- **Format:** Browser print dialog
+- **Use Case:** Physical copies, PDF via "Save as PDF"
+- **Features:**
+  - Print-optimized layout
+  - Direct to printer or save as PDF
 
 ---
 
