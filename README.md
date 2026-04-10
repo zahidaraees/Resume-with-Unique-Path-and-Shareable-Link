@@ -30,7 +30,7 @@ AI Integration: OpenAI API
 📦 Installation
 bash
 # Clone the repository
-git clone https://github.com/yourusername/dynamic-resume-builder.git
+git clone [https://github.com/yourusername/dynamic-resume-builder.git](https://github.com/zahidaraees/Resume-with-Unique-Path-and-Shareable-Link/tree/main)
 
 # Navigate to project folder
 cd dynamic-resume-builder
