@@ -6,11 +6,62 @@ var shareUrlContainer = document.getElementById('share-url-container');
 var uniqueUrlElement = document.getElementById('unique-url');
 var downloadBtn = document.getElementById('download-btn');
 var shareBtn = document.getElementById('share-btn');
+
+// Demo button handlers
+var demoBtn = document.getElementById('demo-btn');
+var demoBtnHeader = document.getElementById('demo-btn-header');
+
+// Demo data
+var demoData = {
+    username: 'john.anderson',
+    fullname: 'John Anderson',
+    email: 'john.anderson@email.com',
+    phone: '+1 (555) 123-4567',
+    address: '123 Innovation Drive\nSan Francisco, CA 94102',
+    skills: 'JavaScript, TypeScript, React, Node.js, Python, Project Management, Agile Methodologies, Team Leadership, Communication',
+    qualification: 'B.S. Computer Science\nStanford University (2016-2020)\nGPA: 3.8/4.0',
+    education: 'AWS Certified Solutions Architect - Associate (2021)\nGoogle Analytics Certified (2022)\nMeta Front-End Developer Certificate (2023)',
+    experience: 'Senior Software Engineer at TechCorp Inc. (2022-Present)\n• Led development of scalable web applications serving 100K+ users\n• Managed a team of 5 developers and implemented agile practices\n• Reduced application load time by 40% through optimization\n\nSoftware Developer at StartupXYZ (2020-2022)\n• Built responsive React components for customer-facing dashboard\n• Integrated RESTful APIs and implemented real-time features\n• Collaborated with design team to improve UX'
+};
+
+// Function to fill demo data
+function fillDemoData() {
+    document.getElementById('username').value = demoData.username;
+    document.getElementById('fullname').value = demoData.fullname;
+    document.getElementById('email').value = demoData.email;
+    document.getElementById('phone').value = demoData.phone;
+    document.getElementById('address').value = demoData.address;
+    document.getElementById('skills').value = demoData.skills;
+    document.getElementById('Qualification').value = demoData.qualification;
+    document.getElementById('education').value = demoData.education;
+    document.getElementById('Experience').value = demoData.experience;
+    
+    // Scroll to builder section
+    document.getElementById('builder').scrollIntoView({ behavior: 'smooth' });
+    
+    // Auto-generate resume after filling demo data
+    setTimeout(function() {
+        generateBtn.click();
+    }, 300);
+}
+
+// Add event listeners to demo buttons
+if (demoBtn) {
+    demoBtn.addEventListener('click', fillDemoData);
+}
+
+if (demoBtnHeader) {
+    demoBtnHeader.addEventListener('click', function(e) {
+        e.preventDefault();
+        fillDemoData();
+    });
+}
+
 // Function to generate the unique URL
 function generateUniqueUrl(userName) {
     return "https://versal.com/resume/".concat(encodeURIComponent(userName));
 }
-// To generate the resume, here is the function to handle form submission process.  
+// To generate the resume, here is the function to handle form submission process.
 generateBtn.addEventListener('click', function (event) {
     event.preventDefault();
     // Capture or assign, input data from the HTML form
@@ -45,14 +96,25 @@ generateBtn.addEventListener('click', function (event) {
     }
     // Function to display resume with or without profile picture.
     function displayResume(profilePicDataUrl) {
-        var resumeHTML = "\n      <div class=\"resume-container\">\n        <h2><u>".concat(fullName, "</u></h2>\n        ").concat(profilePicDataUrl ? "<p><img src=\"".concat(profilePicDataUrl, "\" alt=\"Profile Picture\" style=\"width: 180px; height: 180px; object-fit: cover; border-radius: 50%;\"></p>") : '', "\n        <hr>\n        <p><strong>Username:</strong> ").concat(userName, "</p>\n        <p><strong>Email:</strong> ").concat(email, "</p>\n        <p><strong>Phone:</strong> ").concat(phone, "</p>\n        <p><strong>Residential Address:</strong><br>").concat(address, "</p>\n        <h3>Skills:</h3> \n        <p>").concat(skills, "</p>\n\n        <h3>Education:</h3>\n        <p><strong>Academic Qualification:</strong><br>").concat(qualification, "</p>\n        <p><strong>Professional Qualification:</strong><br>").concat(professionalQualification, "</p>\n        <h3>Work Experience:</h3>\n        <p>").concat(experience, "</p>\n      </div>\n    ");
-        resumeOutput.innerHTML = resumeHTML;
+        // Show the resume output section
+        resumeOutput.style.display = 'block';
+        
+        var resumeHTML = "\n      <div class=\"resume-container\">\n        <h2>".concat(fullName, "</h2>\n        ").concat(profilePicDataUrl ? "<p><img src=\"".concat(profilePicDataUrl, "\" alt=\"Profile Picture\"></p>") : '', "\n        <hr>\n        <p><strong>Username:</strong> ").concat(userName, "</p>\n        <p><strong>Email:</strong> ").concat(email, "</p>\n        <p><strong>Phone:</strong> ").concat(phone, "</p>\n        <p><strong>Residential Address:</strong><br>").concat(address, "</p>\n        <h3>Skills:</h3> \n        <p>").concat(skills, "</p>\n\n        <h3>Education:</h3>\n        <p><strong>Academic Qualification:</strong><br>").concat(qualification, "</p>\n        <p><strong>Professional Qualification:</strong><br>").concat(professionalQualification, "</p>\n        <h3>Work Experience:</h3>\n        <p>").concat(experience, "</p>\n      </div>\n    ");
+        resumeOutput.innerHTML = '<h3 style="text-align: center; color: #6B7280; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px;">📄 Your Resume Preview</h3>' + resumeHTML;
         // Generate the unique URL
         var uniqueUrl = generateUniqueUrl(userName);
         uniqueUrlElement.textContent = uniqueUrl;
         // Show the share URL section
         shareUrlContainer.style.display = 'block';
+        
+        // Scroll to resume output
+        setTimeout(function() {
+            resumeOutput.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+        
         // Set up the download button
+        downloadBtn.replaceWith(downloadBtn.cloneNode(true));
+        downloadBtn = document.getElementById('download-btn');
         downloadBtn.addEventListener('click', function () {
             // Here we could use jsPDF or other libraries to generate a PDF, but for now, we'll use a simple download feature.
             var element = document.createElement('a');
@@ -63,9 +125,11 @@ generateBtn.addEventListener('click', function (event) {
             element.click();
         });
         // Set up the share button to open email client
+        shareBtn.replaceWith(shareBtn.cloneNode(true));
+        shareBtn = document.getElementById('share-btn');
         shareBtn.addEventListener('click', function () {
             var subject = "My Resume: ".concat(fullName);
-            var body = "Hello, \n\nHere is my resume for your kind consideration.<br>: ".concat(uniqueUrl, "\n\nBest regards,\n").concat(fullName);
+            var body = "Hello, \n\nHere is my resume for your kind consideration.\n\n".concat(uniqueUrl, "\n\nBest regards,\n").concat(fullName);
             var mailtoLink = "mailto:?subject=".concat(encodeURIComponent(subject), "&body=").concat(encodeURIComponent(body));
             window.location.href = mailtoLink; // This will open the default email client with the pre-filled message
         });

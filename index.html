@@ -3,70 +3,234 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta description="Dynamic Resume Builder With HTML CSS TypeScript. Hackathon 0 Milstone 5">
-  <title> Dynamic Resume Builder </title>
+  <meta name="description" content="Dynamic Resume Builder - Create, customize and share your professional resume instantly. Free, no sign-up required.">
+  <meta name="keywords" content="resume builder, cv maker, free resume tool, shareable resume">
+  <meta property="og:title" content="Resume Builder - Create & Share Instantly">
+  <meta property="og:description" content="Build professional resumes in minutes with our free, beautiful resume builder.">
+  <title>Resume Builder Pro - Create & Share Your Professional Resume</title>
   <link rel="stylesheet" href="style.css">
-
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
 </head>
 
 <body>
-  <h1>Dynamic & Editable Resume Builder</h1>
-  <h2>Developed By: Zahida Raees</h2>
-  
-  <form id="resume-form">
-    <fieldset>
-      <legend>PERSONAL INFORMATION</legend>
-      <input type="text" id="username" name="User Name" placeholder="User Name" required><br><br>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-content">
+      <div class="logo">
+        <span class="logo-icon">📄</span>
+        <span class="logo-text">Resume Builder <span class="logo-accent">Pro</span></span>
+      </div>
+      <nav class="header-nav">
+        <a href="#builder" class="nav-link">Builder</a>
+        <a href="#" class="nav-link" id="demo-btn-header">Demo</a>
+      </nav>
+    </div>
+  </header>
 
-      <label for="profilepic" class="inputpic"><strong>Upload Passport Size Picture</strong></label>
-      <input type="file" id="profilepic" accept="image/*"><br><br>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Build Your Professional Resume in Minutes — Not Hours</h1>
+      <p class="hero-subtitle">Stop wrestling with complicated templates. Create a polished resume, get a unique shareable link, and send it to recruiters instantly.</p>
+      <p class="hero-tagline">No sign-up. No hassle. Just results.</p>
+      <div class="hero-buttons">
+        <a href="#builder" class="btn btn-primary">✨ Build My Resume Now</a>
+        <button type="button" class="btn btn-outline" id="demo-btn">👀 See It In Action</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-number">10K+</span>
+          <span class="stat-label">Resumes Created</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">100%</span>
+          <span class="stat-label">Free Forever</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">⚡</span>
+          <span class="stat-label">Share Instantly</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-      <label for="fullname" class="inputname">Full Name:</label>
-      <input type="text" name="fullname" id="fullname" required /><br>
+  <!-- Resume Builder Section -->
+  <section id="builder" class="builder-section">
+    <h2 class="section-title">Build. Share. Get Hired Faster.</h2>
+    <p class="section-subtitle">Fill in your details below and watch your professional resume come to life!</p>
 
-      <label for="email" class="inputname">Email:</label>
-      <input type="email" name="email" id="email" required /><br>
+    <form id="resume-form">
+      <!-- Personal Information -->
+      <fieldset>
+        <legend>👤 Personal Information</legend>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="e.g., john.doe" required>
+          </div>
+          <div class="form-group">
+            <label for="fullname">Full Name</label>
+            <input type="text" id="fullname" name="fullname" placeholder="e.g., John Anderson" required>
+          </div>
+        </div>
 
-      <label for="phone" class="inputname">Contact No(Cell / Landline)#:</label>
-      <input type="text" name="phone" id="phone" required /><br>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="e.g., john@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="e.g., +1 (555) 123-4567" required>
+          </div>
+        </div>
 
-      <label for="address" class="inputname">Your Residential Address:</label>
-      <textarea name="address" id="address" required></textarea><br>
-    </fieldset>
+        <div class="form-group">
+          <label for="address">Residential Address</label>
+          <textarea id="address" name="address" placeholder="e.g., 123 Main Street, San Francisco, CA 94102" required></textarea>
+        </div>
 
-    <fieldset>
-      <legend>SKILLS</legend>
-      <textarea name="skills" id="skills" required></textarea><br><br>
-    </fieldset>
+        <div class="form-group">
+          <label for="profilepic" class="file-upload-label">
+            <span class="upload-icon">📷</span>
+            <span>Upload Profile Photo (Optional)</span>
+          </label>
+          <input type="file" id="profilepic" accept="image/*">
+        </div>
+      </fieldset>
 
-    <fieldset>
-      <legend>EDUCATION</legend>
-      <label for="Qualification" class="inputEdu">Academic Qualification:</label>
-      <textarea name="Qualification" id="Qualification" required></textarea><br>
+      <!-- Skills -->
+      <fieldset>
+        <legend>🛠️ Skills</legend>
+        <div class="form-group">
+          <label for="skills">Your Professional Skills</label>
+          <textarea id="skills" name="skills" placeholder="e.g., JavaScript, React, Node.js, Python, Project Management, Communication..." required></textarea>
+        </div>
+      </fieldset>
 
-      <label for="education" class="inputname">Professional Qualification:</label>
-      <textarea name="education" id="education" required></textarea><br>
-    </fieldset>
+      <!-- Education -->
+      <fieldset>
+        <legend>🎓 Education & Qualifications</legend>
+        
+        <div class="form-group">
+          <label for="Qualification">Academic Qualification</label>
+          <textarea id="Qualification" name="Qualification" placeholder="e.g., B.S. Computer Science, Stanford University (2020)" required></textarea>
+        </div>
 
-    <fieldset>
-      <legend>EXPERIENCE</legend>
-      <label for="Experience" class="inputExp">Work Experience:</label>
-      <textarea name="Experience" id="Experience" required></textarea><br><br>
-    </fieldset><br>
+        <div class="form-group">
+          <label for="education">Professional Qualification</label>
+          <textarea id="education" name="education" placeholder="e.g., AWS Certified Solutions Architect, Google Analytics Certified" required></textarea>
+        </div>
+      </fieldset>
 
-    <button type="button" id="generate-btn">Generate/Edit Resume</button>
-  </form>
+      <!-- Experience -->
+      <fieldset>
+        <legend>💼 Work Experience</legend>
+        <div class="form-group">
+          <label for="Experience">Your Work Experience</label>
+          <textarea id="Experience" name="Experience" placeholder="e.g., Software Engineer at TechCorp (2020-2024)&#10;- Led development of web applications&#10;- Managed team of 5 developers" required></textarea>
+        </div>
+      </fieldset>
 
-  <!-- Resume Output on Screen -->
-  <div id="resumeOutput"></div>
+      <button type="button" id="generate-btn">🚀 Generate Resume</button>
+    </form>
 
-  <!-- Share or Download Resume  -->
-  <div id="share-url-container" style="display: none;">
-    <p><strong>Share your resume:</strong></p>
-    <p>Resume URL: <span id="unique-url"></span></p>
-    <button id="download-btn">Download Resume</button>
-    <button id="share-btn">Share via Email</button>
-  </div>
+    <!-- Resume Output -->
+    <div id="resumeOutput" style="display: none;">
+      <h3 style="text-align: center; color: #6B7280; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px;">📄 Your Resume Preview</h3>
+    </div>
+
+    <!-- Share Section -->
+    <div id="share-url-container" style="display: none;">
+      <h3 style="margin-top: 0; color: #10B981;">✅ Resume Generated Successfully!</h3>
+      <p><strong>Share your resume with this unique link:</strong></p>
+      <p class="share-url-text">Resume URL: <span id="unique-url"></span></p>
+      <div class="share-buttons">
+        <button id="download-btn">📥 Download Resume</button>
+        <button id="share-btn">📧 Share via Email</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <h2 class="section-title">Why Choose Resume Builder Pro?</h2>
+    <p class="section-subtitle">Everything you need. Nothing you don't.</p>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Instant Resume Generation</h3>
+        <p>Fill in your details once. Watch your resume come to life in real-time with a clean, professional layout that makes recruiters stop scrolling and start reading.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔗</div>
+        <h3>Your Own Unique Shareable Link</h3>
+        <p>No attachments. No awkward file formats. Get a clean, unique URL you can drop into emails, LinkedIn messages, or job applications — and update it anytime.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3>Beautiful by Default</h3>
+        <p>Forget clunky Word templates. Every resume is automatically formatted with modern typography, perfect spacing, and a layout that screams "hire this person."</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Works Anywhere</h3>
+        <p>Building your resume on your phone during a lunch break? Done. Our fully responsive design means your resume looks flawless on any device.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works">
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-subtitle">Three simple steps to your professional resume</p>
+    <div class="steps-container">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Fill Your Details</h3>
+        <p>Enter your personal info, skills, education & experience</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Preview Instantly</h3>
+        <p>See your professional resume generated in real-time</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Share Your Link</h3>
+        <p>Get a unique URL to share with recruiters instantly</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>Ready to Build Your Professional Resume?</h2>
+      <p>Join thousands who've already created and shared their resumes</p>
+      <a href="#builder" class="btn btn-cta-large">🚀 Start Building — It's Free</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p>Made with ❤️ by <strong>Zahida Raees</strong></p>
+      <p class="footer-links">
+        <a href="https://github.com/zahidaraees/Resume-with-Unique-Path-and-Shareable-Link" target="_blank">GitHub</a>
+        <span class="separator">•</span>
+        <a href="#">Privacy Policy</a>
+        <span class="separator">•</span>
+        <a href="#">Contact</a>
+      </p>
+      <p class="copyright">© 2026 Resume Builder Pro. All rights reserved.</p>
+    </div>
+  </footer>
 
   <script src="script.js"></script>
 </body>
