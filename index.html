@@ -68,10 +68,12 @@
           <div class="form-group">
             <label for="username">Username</label>
             <input type="text" id="username" name="username" placeholder="e.g., john.doe" required>
+            <span class="error-message" id="username-error"></span>
           </div>
           <div class="form-group">
             <label for="fullname">Full Name</label>
             <input type="text" id="fullname" name="fullname" placeholder="e.g., John Anderson" required>
+            <span class="error-message" id="fullname-error"></span>
           </div>
         </div>
 
@@ -79,16 +81,19 @@
           <div class="form-group">
             <label for="email">Email Address</label>
             <input type="email" id="email" name="email" placeholder="e.g., john@email.com" required>
+            <span class="error-message" id="email-error"></span>
           </div>
           <div class="form-group">
             <label for="phone">Phone Number</label>
             <input type="tel" id="phone" name="phone" placeholder="e.g., +1 (555) 123-4567" required>
+            <span class="error-message" id="phone-error"></span>
           </div>
         </div>
 
         <div class="form-group">
           <label for="address">Residential Address</label>
           <textarea id="address" name="address" placeholder="e.g., 123 Main Street, San Francisco, CA 94102" required></textarea>
+          <span class="error-message" id="address-error"></span>
         </div>
 
         <div class="form-group">
@@ -106,6 +111,7 @@
         <div class="form-group">
           <label for="skills">Your Professional Skills</label>
           <textarea id="skills" name="skills" placeholder="e.g., JavaScript, React, Node.js, Python, Project Management, Communication..." required></textarea>
+          <span class="error-message" id="skills-error"></span>
         </div>
       </fieldset>
 
@@ -116,11 +122,13 @@
         <div class="form-group">
           <label for="Qualification">Academic Qualification</label>
           <textarea id="Qualification" name="Qualification" placeholder="e.g., B.S. Computer Science, Stanford University (2020)" required></textarea>
+          <span class="error-message" id="Qualification-error"></span>
         </div>
 
         <div class="form-group">
           <label for="education">Professional Qualification</label>
           <textarea id="education" name="education" placeholder="e.g., AWS Certified Solutions Architect, Google Analytics Certified" required></textarea>
+          <span class="error-message" id="education-error"></span>
         </div>
       </fieldset>
 
@@ -130,10 +138,14 @@
         <div class="form-group">
           <label for="Experience">Your Work Experience</label>
           <textarea id="Experience" name="Experience" placeholder="e.g., Software Engineer at TechCorp (2020-2024)&#10;- Led development of web applications&#10;- Managed team of 5 developers" required></textarea>
+          <span class="error-message" id="Experience-error"></span>
         </div>
       </fieldset>
 
-      <button type="button" id="generate-btn">🚀 Generate Resume</button>
+      <div class="button-group">
+        <button type="button" id="generate-btn">🚀 Generate Resume</button>
+        <button type="button" id="clear-btn" class="btn-secondary">🗑️ Clear Form</button>
+      </div>
     </form>
 
     <!-- Resume Output -->
@@ -148,6 +160,7 @@
       <p class="share-url-text">Resume URL: <span id="unique-url"></span></p>
       <div class="share-buttons">
         <button id="download-btn">📥 Download Resume</button>
+        <button id="print-btn">🖨️ Print Resume</button>
         <button id="share-btn">📧 Share via Email</button>
       </div>
     </div>
@@ -214,6 +227,49 @@
       <h2>Ready to Build Your Professional Resume?</h2>
       <p>Join thousands who've already created and shared their resumes</p>
       <a href="#builder" class="btn btn-cta-large">🚀 Start Building — It's Free</a>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials-section">
+    <h2 class="section-title">Loved by Job Seekers Everywhere</h2>
+    <p class="section-subtitle">See what our users are saying</p>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+        <p class="testimonial-text">"I built my resume in under 10 minutes and shared it with 5 recruiters. Got 3 interview calls the same week!"</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">👩‍💼</div>
+          <div class="author-info">
+            <strong>Sarah M.</strong>
+            <span>Software Engineer</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+        <p class="testimonial-text">"Finally, a resume builder that doesn't require a PhD to use. Clean, simple, and the shareable link is genius."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">👨‍💻</div>
+          <div class="author-info">
+            <strong>David K.</strong>
+            <span>Recent Graduate</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+        <p class="testimonial-text">"As a recruiter, I love that candidates send me clean links instead of weird file formats. Makes my job so much easier."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">👨‍💼</div>
+          <div class="author-info">
+            <strong>Michael R.</strong>
+            <span>Talent Acquisition Manager</span>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 

@@ -309,6 +309,105 @@ input[type="file"]:hover {
 }
 
 /* ========================================
+   FORM VALIDATION & ERROR MESSAGES
+   ======================================== */
+
+.error-message {
+  display: block;
+  color: #EF4444;
+  font-size: 0.8125rem;
+  margin-top: 6px;
+  min-height: 18px;
+  font-weight: 500;
+}
+
+input.error, textarea.error {
+  border-color: #EF4444;
+  background-color: #FEF2F2;
+}
+
+input.error:focus, textarea.error:focus {
+  border-color: #EF4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Button Group */
+.button-group {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.button-group button {
+  flex: 1;
+  margin-top: 0;
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary:hover {
+  background: var(--background);
+  color: var(--text-primary);
+  border-color: #D1D5DB;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ========================================
+   TOAST NOTIFICATION
+   ======================================== */
+
+.toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: var(--surface);
+  padding: 16px 24px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-xl);
+  border-left: 4px solid var(--secondary);
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+  max-width: 400px;
+}
+
+.toast.error {
+  border-left-color: #EF4444;
+}
+
+.toast-message {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* ========================================
    HEADER / NAVIGATION
    ======================================== */
 
@@ -669,6 +768,76 @@ input[type="file"]:hover {
 }
 
 /* ========================================
+   TESTIMONIALS SECTION
+   ======================================== */
+
+.testimonials-section {
+  background: var(--background);
+  padding: 80px 24px;
+  text-align: center;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.testimonial-card {
+  background: var(--surface);
+  padding: 32px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  text-align: left;
+  transition: all 0.3s ease;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.testimonial-stars {
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+}
+
+.testimonial-text {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 24px;
+  font-style: italic;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.author-avatar {
+  font-size: 2.5rem;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.author-info strong {
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+}
+
+.author-info span {
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+}
+
+/* ========================================
    HOW IT WORKS SECTION
    ======================================== */
 
@@ -923,6 +1092,19 @@ input[type="file"]:hover {
     width: 100%;
     justify-content: center;
     padding: 16px 32px;
+  }
+
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .testimonial-card {
+    padding: 24px;
+  }
+
+  .button-group {
+    flex-direction: column;
   }
 }
 
