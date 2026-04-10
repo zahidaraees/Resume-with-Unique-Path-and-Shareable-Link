@@ -9,6 +9,29 @@ var downloadBtn = document.getElementById('download-btn');
 var printBtn = document.getElementById('print-btn');
 var shareBtn = document.getElementById('share-btn');
 
+// Set dynamic copyright year
+var copyrightYear = document.getElementById('copyright-year');
+if (copyrightYear) {
+    copyrightYear.textContent = "© " + new Date().getFullYear();
+}
+
+// Dark mode toggle
+var darkModeToggle = document.getElementById('dark-mode-toggle');
+var body = document.body;
+
+// Check for saved dark mode preference or respect system preference
+if (localStorage.getItem('darkMode') === 'true' || 
+    (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    body.classList.add('dark-mode');
+}
+
+if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', function() {
+        body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
+    });
+}
+
 // Demo button handlers
 var demoBtn = document.getElementById('demo-btn');
 var demoBtnHeader = document.getElementById('demo-btn-header');
@@ -144,6 +167,29 @@ if (demoBtnHeader) {
 if (clearBtn) {
     clearBtn.addEventListener('click', clearForm);
 }
+
+// Photo upload validation
+var profilePicInput = document.getElementById('profilepic');
+if (profilePicInput) {
+    profilePicInput.addEventListener('change', function() {
+        var file = this.files[0];
+        if (file) {
+            // Check file size (2MB max)
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('Photo must be less than 2MB', 'error');
+                this.value = '';
+                return;
+            }
+            // Check file type
+            if (!file.type.match('image.*')) {
+                showToast('Please upload an image file (JPG, PNG, GIF)', 'error');
+                this.value = '';
+                return;
+            }
+            showToast('Photo uploaded successfully!', 'success');
+        }
+    });
+}
 // Function to generate the unique URL
 function generateUniqueUrl(userName) {
     return "https://versal.com/resume/".concat(encodeURIComponent(userName));
@@ -165,6 +211,13 @@ generateBtn.addEventListener('click', function (event) {
     // Show loading state
     generateBtn.disabled = true;
     generateBtn.textContent = '⏳ Generating Resume...';
+    
+    // Show loading skeleton
+    var loadingSkeleton = document.getElementById('loading-skeleton');
+    if (loadingSkeleton) {
+        loadingSkeleton.style.display = 'block';
+    }
+    resumeOutput.style.display = 'block';
     // Capture or assign, input data from the HTML form
     var profilepicInput = document.getElementById('profilepic');
     var userName = document.getElementById('username').value;
@@ -176,6 +229,9 @@ generateBtn.addEventListener('click', function (event) {
     var qualification = document.getElementById('Qualification').value;
     var professionalQualification = document.getElementById('education').value;
     var experience = document.getElementById('Experience').value;
+    var projects = document.getElementById('Projects').value;
+    var certifications = document.getElementById('Certifications').value;
+    var languages = document.getElementById('Languages').value;
     // Read the uploaded profile picture. (if any)
     var profilePicDataUrl = null;
     if (profilepicInput.files && profilepicInput.files[0]) {
@@ -192,9 +248,20 @@ generateBtn.addEventListener('click', function (event) {
     }
     // Function to display resume with or without profile picture.
     function displayResume(profilePicDataUrl) {
+        // Hide loading skeleton
+        if (loadingSkeleton) {
+            loadingSkeleton.style.display = 'none';
+        }
+        
         // Show the resume output section
         resumeOutput.style.display = 'block';
-        var resumeHTML = "\n      <div class=\"resume-container\">\n        <h2>".concat(fullName, "</h2>\n        ").concat(profilePicDataUrl ? "<p><img src=\"".concat(profilePicDataUrl, "\" alt=\"Profile Picture\"></p>") : '', "\n        <hr>\n        <p><strong>Username:</strong> ").concat(userName, "</p>\n        <p><strong>Email:</strong> ").concat(email, "</p>\n        <p><strong>Phone:</strong> ").concat(phone, "</p>\n        <p><strong>Residential Address:</strong><br>").concat(address, "</p>\n        <h3>Skills:</h3> \n        <p>").concat(skills, "</p>\n\n        <h3>Education:</h3>\n        <p><strong>Academic Qualification:</strong><br>").concat(qualification, "</p>\n        <p><strong>Professional Qualification:</strong><br>").concat(professionalQualification, "</p>\n        <h3>Work Experience:</h3>\n        <p>").concat(experience, "</p>\n      </div>\n    ");
+        
+        // Build optional sections
+        var projectsSection = projects ? "<h3>Projects:</h3>\n        <p>".concat(projects, "</p>") : '';
+        var certificationsSection = certifications ? "<h3>Certifications & Awards:</h3>\n        <p>".concat(certifications, "</p>") : '';
+        var languagesSection = languages ? "<h3>Languages:</h3>\n        <p>".concat(languages, "</p>") : '';
+        
+        var resumeHTML = "\n      <div class=\"resume-container\">\n        <h2>".concat(fullName, "</h2>\n        ").concat(profilePicDataUrl ? "<p><img src=\"".concat(profilePicDataUrl, "\" alt=\"Profile Picture\"></p>") : '', "\n        <hr>\n        <p><strong>Email:</strong> ").concat(email, "</p>\n        <p><strong>Phone:</strong> ").concat(phone, "</p>\n        <p><strong>Address:</strong><br>").concat(address, "</p>\n        <h3>Skills:</h3> \n        <p>").concat(skills, "</p>\n\n        <h3>Education:</h3>\n        <p><strong>Academic Qualification:</strong><br>").concat(qualification, "</p>\n        <p><strong>Professional Qualification:</strong><br>").concat(professionalQualification, "</p>\n        <h3>Work Experience:</h3>\n        <p>").concat(experience, "</p>\n        ").concat(projectsSection, "\n        ").concat(certificationsSection, "\n        ").concat(languagesSection, "\n      </div>\n    ");
         resumeOutput.innerHTML = '<h3 style="text-align: center; color: #6B7280; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px;">📄 Your Resume Preview</h3>' + resumeHTML;
         // Generate the unique URL
         var uniqueUrl = generateUniqueUrl(userName);

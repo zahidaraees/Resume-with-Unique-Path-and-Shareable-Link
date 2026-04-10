@@ -17,12 +17,36 @@
   <header class="site-header">
     <div class="header-content">
       <div class="logo">
-        <span class="logo-icon">📄</span>
+        <svg class="logo-icon-svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
         <span class="logo-text">Resume Builder <span class="logo-accent">Pro</span></span>
       </div>
       <nav class="header-nav">
         <a href="#builder" class="nav-link">Builder</a>
-        <a href="#" class="nav-link" id="demo-btn-header">Demo</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#how-it-works" class="nav-link">How It Works</a>
+        <button type="button" class="nav-link demo-btn" id="demo-btn-header">Demo</button>
+        <button type="button" class="dark-mode-toggle" id="dark-mode-toggle" aria-label="Toggle dark mode">
+          <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
       </nav>
     </div>
   </header>
@@ -34,8 +58,19 @@
       <p class="hero-subtitle">Stop wrestling with complicated templates. Create a polished resume, get a unique shareable link, and send it to recruiters instantly.</p>
       <p class="hero-tagline">No sign-up. No hassle. Just results.</p>
       <div class="hero-buttons">
-        <a href="#builder" class="btn btn-primary">✨ Build My Resume Now</a>
-        <button type="button" class="btn btn-outline" id="demo-btn">👀 See It In Action</button>
+        <a href="#builder" class="btn btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          Build My Resume Now
+        </a>
+        <button type="button" class="btn btn-outline" id="demo-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="10 8 16 12 10 16 10 8"></polygon>
+          </svg>
+          See It In Action
+        </button>
       </div>
       <div class="hero-stats">
         <div class="stat">
@@ -62,16 +97,22 @@
     <form id="resume-form">
       <!-- Personal Information -->
       <fieldset>
-        <legend>👤 Personal Information</legend>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          Personal Information
+        </legend>
         
         <div class="form-row">
           <div class="form-group">
-            <label for="username">Username</label>
+            <label for="username">Username <span class="required">*</span></label>
             <input type="text" id="username" name="username" placeholder="e.g., john.doe" required>
             <span class="error-message" id="username-error"></span>
           </div>
           <div class="form-group">
-            <label for="fullname">Full Name</label>
+            <label for="fullname">Full Name <span class="required">*</span></label>
             <input type="text" id="fullname" name="fullname" placeholder="e.g., John Anderson" required>
             <span class="error-message" id="fullname-error"></span>
           </div>
@@ -79,27 +120,30 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label for="email">Email Address</label>
+            <label for="email">Email Address <span class="required">*</span></label>
             <input type="email" id="email" name="email" placeholder="e.g., john@email.com" required>
             <span class="error-message" id="email-error"></span>
           </div>
           <div class="form-group">
-            <label for="phone">Phone Number</label>
+            <label for="phone">Phone Number <span class="required">*</span></label>
             <input type="tel" id="phone" name="phone" placeholder="e.g., +1 (555) 123-4567" required>
             <span class="error-message" id="phone-error"></span>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="address">Residential Address</label>
+          <label for="address">Residential Address <span class="required">*</span></label>
           <textarea id="address" name="address" placeholder="e.g., 123 Main Street, San Francisco, CA 94102" required></textarea>
           <span class="error-message" id="address-error"></span>
         </div>
 
         <div class="form-group">
           <label for="profilepic" class="file-upload-label">
-            <span class="upload-icon">📷</span>
-            <span>Upload Profile Photo (Optional)</span>
+            <svg class="upload-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+            <span>Upload Profile Photo <span class="optional">(Optional, Max 2MB)</span></span>
           </label>
           <input type="file" id="profilepic" accept="image/*">
         </div>
@@ -107,7 +151,12 @@
 
       <!-- Skills -->
       <fieldset>
-        <legend>🛠️ Skills</legend>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          Skills
+        </legend>
         <div class="form-group">
           <label for="skills">Your Professional Skills</label>
           <textarea id="skills" name="skills" placeholder="e.g., JavaScript, React, Node.js, Python, Project Management, Communication..." required></textarea>
@@ -117,7 +166,13 @@
 
       <!-- Education -->
       <fieldset>
-        <legend>🎓 Education & Qualifications</legend>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+          </svg>
+          Education & Qualifications
+        </legend>
         
         <div class="form-group">
           <label for="Qualification">Academic Qualification</label>
@@ -134,23 +189,100 @@
 
       <!-- Experience -->
       <fieldset>
-        <legend>💼 Work Experience</legend>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
+          Work Experience
+        </legend>
         <div class="form-group">
-          <label for="Experience">Your Work Experience</label>
+          <label for="Experience">Your Work Experience <span class="required">*</span></label>
           <textarea id="Experience" name="Experience" placeholder="e.g., Software Engineer at TechCorp (2020-2024)&#10;- Led development of web applications&#10;- Managed team of 5 developers" required></textarea>
           <span class="error-message" id="Experience-error"></span>
         </div>
       </fieldset>
 
+      <!-- Projects -->
+      <fieldset>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Projects <span class="optional-field">(Optional)</span>
+        </legend>
+        <div class="form-group">
+          <label for="Projects">Key Projects</label>
+          <textarea id="Projects" name="Projects" placeholder="e.g., E-Commerce Platform (2023)&#10;- Built full-stack app with React & Node.js&#10;- 10K+ monthly active users"></textarea>
+          <span class="error-message" id="Projects-error"></span>
+        </div>
+      </fieldset>
+
+      <!-- Certifications -->
+      <fieldset>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7"></circle>
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+          </svg>
+          Certifications & Awards <span class="optional-field">(Optional)</span>
+        </legend>
+        <div class="form-group">
+          <label for="Certifications">Certifications & Awards</label>
+          <textarea id="Certifications" name="Certifications" placeholder="e.g., AWS Certified Solutions Architect (2023)&#10;Google Analytics Certified (2022)&#10;Employee of the Month - March 2023"></textarea>
+          <span class="error-message" id="Certifications-error"></span>
+        </div>
+      </fieldset>
+
+      <!-- Languages -->
+      <fieldset>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m5 8 6 6"></path>
+            <path d="m4 14 6-6 2-3"></path>
+            <path d="M2 5h12"></path>
+            <path d="M7 2h1"></path>
+            <path d="m22 22-7-7"></path>
+          </svg>
+          Languages <span class="optional-field">(Optional)</span>
+        </legend>
+        <div class="form-group">
+          <label for="Languages">Languages Spoken</label>
+          <textarea id="Languages" name="Languages" placeholder="e.g., English (Native)&#10;Spanish (Professional Working Proficiency)&#10;French (Conversational)"></textarea>
+          <span class="error-message" id="Languages-error"></span>
+        </div>
+      </fieldset>
+
       <div class="button-group">
-        <button type="button" id="generate-btn">🚀 Generate Resume</button>
-        <button type="button" id="clear-btn" class="btn-secondary">🗑️ Clear Form</button>
+        <button type="button" id="generate-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          Generate Resume
+        </button>
+        <button type="button" id="clear-btn" class="btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Clear Form
+        </button>
       </div>
     </form>
 
     <!-- Resume Output -->
     <div id="resumeOutput" style="display: none;">
       <h3 style="text-align: center; color: #6B7280; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px;">📄 Your Resume Preview</h3>
+      <!-- Loading Skeleton -->
+      <div id="loading-skeleton" class="loading-skeleton skeleton-container" style="display: none;">
+        <div class="loading-skeleton skeleton-title"></div>
+        <div class="loading-skeleton skeleton-line long"></div>
+        <div class="loading-skeleton skeleton-line medium"></div>
+        <div class="loading-skeleton skeleton-line short"></div>
+        <div class="loading-skeleton skeleton-line long"></div>
+        <div class="loading-skeleton skeleton-line medium"></div>
+        <div class="loading-skeleton skeleton-line short"></div>
+      </div>
     </div>
 
     <!-- Share Section -->
@@ -159,39 +291,80 @@
       <p><strong>Share your resume with this unique link:</strong></p>
       <p class="share-url-text">Resume URL: <span id="unique-url"></span></p>
       <div class="share-buttons">
-        <button id="download-btn">📥 Download Resume</button>
-        <button id="print-btn">🖨️ Print Resume</button>
-        <button id="share-btn">📧 Share via Email</button>
+        <button id="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Download
+        </button>
+        <button id="print-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print
+        </button>
+        <button id="share-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          Share via Email
+        </button>
       </div>
     </div>
   </section>
 
   <!-- Features Section -->
-  <section class="features-section">
+  <section class="features-section" id="features">
     <h2 class="section-title">Why Choose Resume Builder Pro?</h2>
     <p class="section-subtitle">Everything you need. Nothing you don't.</p>
     
     <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon">⚡</div>
+        <div class="feature-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
         <h3>Instant Resume Generation</h3>
         <p>Fill in your details once. Watch your resume come to life in real-time with a clean, professional layout that makes recruiters stop scrolling and start reading.</p>
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">🔗</div>
+        <div class="feature-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+        </div>
         <h3>Your Own Unique Shareable Link</h3>
         <p>No attachments. No awkward file formats. Get a clean, unique URL you can drop into emails, LinkedIn messages, or job applications — and update it anytime.</p>
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">🎨</div>
+        <div class="feature-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+          </svg>
+        </div>
         <h3>Beautiful by Default</h3>
         <p>Forget clunky Word templates. Every resume is automatically formatted with modern typography, perfect spacing, and a layout that screams "hire this person."</p>
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">📱</div>
+        <div class="feature-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+          </svg>
+        </div>
         <h3>Works Anywhere</h3>
         <p>Building your resume on your phone during a lunch break? Done. Our fully responsive design means your resume looks flawless on any device.</p>
       </div>
@@ -199,22 +372,40 @@
   </section>
 
   <!-- How It Works Section -->
-  <section class="how-it-works">
+  <section class="how-it-works" id="how-it-works">
     <h2 class="section-title">How It Works</h2>
     <p class="section-subtitle">Three simple steps to your professional resume</p>
     <div class="steps-container">
       <div class="step">
-        <div class="step-number">1</div>
+        <div class="step-number">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+        </div>
         <h3>Fill Your Details</h3>
         <p>Enter your personal info, skills, education & experience</p>
       </div>
       <div class="step">
-        <div class="step-number">2</div>
+        <div class="step-number">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </div>
         <h3>Preview Instantly</h3>
         <p>See your professional resume generated in real-time</p>
       </div>
       <div class="step">
-        <div class="step-number">3</div>
+        <div class="step-number">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+          </svg>
+        </div>
         <h3>Share Your Link</h3>
         <p>Get a unique URL to share with recruiters instantly</p>
       </div>
@@ -226,7 +417,12 @@
     <div class="cta-content">
       <h2>Ready to Build Your Professional Resume?</h2>
       <p>Join thousands who've already created and shared their resumes</p>
-      <a href="#builder" class="btn btn-cta-large">🚀 Start Building — It's Free</a>
+      <a href="#builder" class="btn btn-cta-large">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        Start Building — It's Free
+      </a>
     </div>
   </section>
 
@@ -284,7 +480,7 @@
         <span class="separator">•</span>
         <a href="#">Contact</a>
       </p>
-      <p class="copyright">© 2026 Resume Builder Pro. All rights reserved.</p>
+      <p class="copyright"><span id="copyright-year"></span> Resume Builder Pro. All rights reserved.</p>
     </div>
   </footer>
 
