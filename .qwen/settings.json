@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(start *)"
+      "Bash(start *)",
+      "Bash(python *)",
+      "Bash(pip install *)",
+      "Bash(explorer *)"
     ]
-  }
+  },
+  "$version": 3
 }

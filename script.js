@@ -518,7 +518,8 @@ function collectFormData() {
         experience: collectExperience(),
         projects: document.getElementById('Projects').value,
         certifications: document.getElementById('Certifications').value,
-        languages: document.getElementById('Languages').value
+        languages: document.getElementById('Languages').value,
+        otherActivities: document.getElementById('OtherActivities').value
     };
     return data;
 }
@@ -635,7 +636,8 @@ function restoreFormData(data) {
     document.getElementById('Projects').value = data.projects || '';
     document.getElementById('Certifications').value = data.certifications || '';
     document.getElementById('Languages').value = data.languages || '';
-    
+    document.getElementById('OtherActivities').value = data.otherActivities || '';
+
     updateATSScore();
 }
 
@@ -751,32 +753,37 @@ function setupResumeUpload() {
 }
 
 function handleResumeUpload(file) {
+    console.log('=== UPLOAD STARTED ===');
+    console.log('File name:', file.name);
+    console.log('File size:', file.size);
+    console.log('File type:', file.type);
+    
     // Validate file
-    var allowedTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    ];
     var allowedExtensions = ['.doc', '.docx', '.pdf'];
     var fileExtension = '.' + file.name.split('.').pop().toLowerCase();
     
+    console.log('File extension:', fileExtension);
+    console.log('Allowed extensions:', allowedExtensions);
+
     if (!allowedExtensions.includes(fileExtension)) {
         showToast('Please upload a DOC, DOCX, or PDF file', 'error');
         return;
     }
-    
+
     if (file.size > 10 * 1024 * 1024) {
         showToast('File size must be under 10MB', 'error');
         return;
     }
-    
+
     // Show progress
     showUploadProgress('Processing your resume...');
-    
+
     // Process based on file type
     if (fileExtension === '.docx') {
+        console.log('Processing as DOCX');
         parseDOCX(file);
     } else if (fileExtension === '.pdf') {
+        console.log('Processing as PDF');
         parsePDF(file);
     } else if (fileExtension === '.doc') {
         showToast('DOC format not supported. Please convert to DOCX or PDF', 'error');
@@ -786,25 +793,87 @@ function handleResumeUpload(file) {
 
 function parseDOCX(file) {
     updateUploadProgress(30, 'Extracting text from document...');
-    
+
     var reader = new FileReader();
     reader.onload = function(e) {
-        updateUploadProgress(60, 'Parsing resume data...');
-        
-        mammoth.extractRawText({ arrayBuffer: e.target.result })
-            .then(function(result) {
-                updateUploadProgress(90, 'Populating fields...');
-                var text = result.value;
-                extractAndPopulateData(text);
-                updateUploadProgress(100, 'Complete!');
-                showUploadResult('Resume uploaded and parsed successfully!');
-                showToast('Resume data extracted successfully!', 'success');
-            })
-            .catch(function(err) {
-                console.error('DOCX parsing error:', err);
-                hideUploadProgress();
-                showToast('Failed to parse document. Please fill manually.', 'error');
-            });
+        try {
+            updateUploadProgress(60, 'Parsing resume data...');
+
+            console.log('Attempting to parse DOCX file...');
+            console.log('File size:', file.size, 'bytes');
+
+            // Try extractRawText first
+            mammoth.extractRawText({ arrayBuffer: e.target.result })
+                .then(function(result) {
+                    var text = result.value;
+                    console.log('DOCX extracted text length:', text.length);
+                    console.log('First 1000 chars:', text.substring(0, 1000));
+                    
+                    if (!text || text.trim().length === 0) {
+                        // Fallback: try extractDocuments
+                        return mammoth.extractDocuments({ arrayBuffer: e.target.result });
+                    }
+                    
+                    updateUploadProgress(90, 'Populating fields...');
+                    extractAndPopulateData(text);
+                    updateUploadProgress(100, 'Complete!');
+                    showUploadResult('Resume uploaded and parsed successfully!');
+                    showToast('Resume data extracted successfully!', 'success');
+                })
+                .catch(function(err) {
+                    console.error('extractRawText failed, trying alternative...', err);
+                    
+                    // Fallback: try converting with different options
+                    mammoth.convertToHtml({ arrayBuffer: e.target.result })
+                        .then(function(result) {
+                            // Strip HTML tags to get plain text
+                            var tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = result.value;
+                            var text = tempDiv.textContent || tempDiv.innerText || '';
+                            
+                            console.log('DOCX extracted via HTML conversion, length:', text.length);
+                            console.log('First 500 chars:', text.substring(0, 500));
+                            
+                            if (text.length < 50) {
+                                throw new Error('Extracted text too short: ' + text.length + ' chars');
+                            }
+                            
+                            updateUploadProgress(90, 'Populating fields...');
+                            extractAndPopulateData(text);
+                            updateUploadProgress(100, 'Complete!');
+                            showUploadResult('Resume uploaded and parsed successfully!');
+                            showToast('Resume data extracted successfully!', 'success');
+                        })
+                        .catch(function(err2) {
+                            console.error('HTML conversion failed, trying plain text...', err2);
+                            
+                            // Last resort: try reading as plain text
+                            var textReader = new FileReader();
+                            textReader.onload = function(e2) {
+                                var text = e2.target.result;
+                                console.log('Read as plain text, length:', text.length);
+                                
+                                if (text.length < 100) {
+                                    throw new Error('Extracted text too short');
+                                }
+                                
+                                updateUploadProgress(90, 'Populating fields...');
+                                extractAndPopulateData(text);
+                                updateUploadProgress(100, 'Complete!');
+                                showUploadResult('Resume uploaded (plain text mode)!');
+                                showToast('Resume data extracted (basic mode)!', 'success');
+                            };
+                            textReader.onerror = function() {
+                                throw err2;
+                            };
+                            textReader.readAsText(file);
+                        });
+                });
+        } catch (error) {
+            console.error('DOCX parsing exception:', error);
+            hideUploadProgress();
+            showToast('Failed to parse document. Please fill manually.', 'error');
+        }
     };
     reader.onerror = function() {
         hideUploadProgress();
@@ -827,9 +896,35 @@ function parsePDF(file) {
             for (var i = 1; i <= pdf.numPages; i++) {
                 textPromises.push(pdf.getPage(i).then(function(page) {
                     return page.getTextContent().then(function(textContent) {
-                        return textContent.items.map(function(item) {
-                            return item.str;
-                        }).join(' ');
+                        // Sort items by Y position (top to bottom) then X position (left to right)
+                        var items = textContent.items.map(function(item) {
+                            return {
+                                str: item.str,
+                                x: item.transform[4],
+                                y: item.transform[5]
+                            };
+                        });
+                        
+                        // Group by lines (similar Y positions)
+                        var lines = {};
+                        items.forEach(function(item) {
+                            var yKey = Math.round(item.y / 10); // Group by 10px bands
+                            if (!lines[yKey]) lines[yKey] = [];
+                            lines[yKey].push(item);
+                        });
+                        
+                        // Sort lines by Y (descending - top to bottom)
+                        var sortedY = Object.keys(lines).sort(function(a, b) { return b - a; });
+                        
+                        var pageText = '';
+                        sortedY.forEach(function(yKey) {
+                            // Sort items in line by X (left to right)
+                            var lineItems = lines[yKey].sort(function(a, b) { return a.x - b.x; });
+                            var lineText = lineItems.map(function(item) { return item.str; }).join(' ');
+                            pageText += lineText.trim() + '\n';
+                        });
+                        
+                        return pageText;
                     });
                 }));
             }
@@ -837,6 +932,7 @@ function parsePDF(file) {
             Promise.all(textPromises).then(function(pages) {
                 updateUploadProgress(90, 'Populating fields...');
                 var fullText = pages.join('\n');
+                console.log('Full extracted text:', fullText.substring(0, 1000));
                 extractAndPopulateData(fullText);
                 updateUploadProgress(100, 'Complete!');
                 showUploadResult('Resume uploaded and parsed successfully!');
@@ -856,7 +952,15 @@ function parsePDF(file) {
 }
 
 function extractAndPopulateData(text) {
-    // Smart data extraction using regex patterns
+    console.log('=== EXTRACTION STARTED ===');
+    console.log('Input text length:', text.length);
+    console.log('Input text preview:', text.substring(0, 500));
+    console.log('Full text for debugging:', text);
+    
+    // Save raw text for debugging
+    window._extractedText = text;
+    
+    // Smart data extraction using keyword-based section detection
     var extracted = {
         fullname: '',
         email: '',
@@ -868,89 +972,552 @@ function extractAndPopulateData(text) {
         education: [],
         certifications: '',
         languages: '',
+        otherActivities: '',
         linkedin: '',
         github: '',
         website: ''
     };
     
-    // Extract email
-    var emailMatch = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
-    if (emailMatch) extracted.email = emailMatch[1];
+    // Normalize text - clean up extra whitespace and formatting artifacts
+    text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    // Remove long underscore lines (formatting artifacts)
+    text = text.replace(/_{10,}/g, '\n');
+    // Remove long dash lines
+    text = text.replace(/-{10,}/g, '\n');
+    // Clean up multiple newlines
+    text = text.replace(/\n{3,}/g, '\n\n');
     
-    // Extract phone
-    var phoneMatch = text.match(/(\+?1?[-.\s]?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4})/);
-    if (phoneMatch) extracted.phone = phoneMatch[1].trim();
+    console.log('Extracted text length:', text.length);
+    console.log('First 500 chars:', text.substring(0, 500));
     
-    // Extract LinkedIn
-    var linkedinMatch = text.match(/(linkedin\.com\/in\/[a-zA-Z0-9_-]+)/);
-    if (linkedinMatch) extracted.linkedin = 'https://' + linkedinMatch[1];
+    // ========================================
+    // EXTRACT CONTACT INFORMATION
+    // ========================================
     
-    // Extract GitHub
-    var githubMatch = text.match(/(github\.com\/[a-zA-Z0-9_-]+)/);
-    if (githubMatch) extracted.github = 'https://' + githubMatch[1];
-    
-    // Extract website
-    var websiteMatch = text.match(/(https?:\/\/[a-zA-Z0-9.-]+\.[a-z]{2,})/);
-    if (websiteMatch && !websiteMatch[1].includes('linkedin') && !websiteMatch[1].includes('github')) {
-        extracted.website = websiteMatch[1];
-    }
-    
-    // Extract name (usually at the beginning, capitalized words)
-    var lines = text.split('\n').map(function(l) { return l.trim(); }).filter(function(l) { return l; });
-    if (lines.length > 0) {
-        var firstLine = lines[0];
-        // Check if it looks like a name (2-4 words, capitalized)
-        if (/^([A-Z][a-z]+[\s-]?){2,4}$/.test(firstLine) && firstLine.length < 50) {
-            extracted.fullname = firstLine;
-        }
-    }
-    
-    // Extract objective/summary (paragraph after name, before experience)
-    var objectivePatterns = [/objective[:\s]*([\s\S]{50,300})(?=experience|work|skills|education)/i];
-    for (var i = 0; i < objectivePatterns.length; i++) {
-        var match = text.match(objectivePatterns[i]);
-        if (match) {
-            extracted.objective = match[1].trim();
+    // Extract email (multiple patterns)
+    var emailPatterns = [
+        /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g,
+        /Email[:\s]+([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/gi
+    ];
+    for (var i = 0; i < emailPatterns.length; i++) {
+        var emailMatch = text.match(emailPatterns[i]);
+        if (emailMatch) {
+            extracted.email = emailMatch[0].replace(/^Email[:\s]+/i, '');
             break;
         }
     }
     
-    // Extract skills
-    var skillsSection = text.match(/skills[:\s]*([\s\S]*?)(?=experience|education|work|languages)/i);
-    if (skillsSection) {
-        var skillsText = skillsSection[1];
-        var skills = skillsText.split(/[,\n•\-]+/).map(function(s) { return s.trim(); }).filter(function(s) { return s && s.length < 50; });
-        extracted.skills = skills.slice(0, 10).map(function(skill) {
-            return { name: skill, level: '' };
+    // Extract phone (multiple international formats)
+    var phonePatterns = [
+        /Cell[#\s]*[:\s]*([+\d][-\d\s]{7,19}\d)/gi,
+        /Mobile[#\s]*[:\s]*([+\d][-\d\s]{7,19}\d)/gi,
+        /Phone[#\s]*[:\s]*([+\d][-\d\s]{7,19}\d)/gi,
+        /Tel[#\s]*[:\s]*([+\d][-\d\s]{7,19}\d)/gi,
+        /(\+[0-9]{1,4}[-.\s]?[0-9]{2,4}[-.\s]?[0-9]{6,14})/,  // International with country code
+        /(\+?92[-.\s]?\d{3}[-.\s]?\d{7})/,  // Pakistan format
+        /(\+?1[-.\s]?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4})/,  // US format
+        /(\d{3}[-.\s]?\d{3}[-.\s]?\d{4})/  // Basic format
+    ];
+    for (var i = 0; i < phonePatterns.length; i++) {
+        var phoneMatch = text.match(phonePatterns[i]);
+        if (phoneMatch) {
+            var phoneVal = phoneMatch[1] || phoneMatch[0];
+            // Clean up the phone number
+            phoneVal = phoneVal.replace(/^(Cell|Mobile|Phone|Tel)[#\s]*[:\s]*/i, '').trim();
+            // Remove extra spaces but keep dashes
+            phoneVal = phoneVal.replace(/\s+/g, '').replace(/[-]+/g, '-');
+            if (phoneVal.length >= 7 && phoneVal.length <= 20 && /\d/.test(phoneVal)) {
+                extracted.phone = phoneVal;
+                break;
+            }
+        }
+    }
+    
+    // Extract LinkedIn
+    var linkedinPatterns = [
+        /(linkedin\.com\/in\/[a-zA-Z0-9_-]+)/gi,
+        /LinkedIn[:\s]+(https?:\/\/[^\s\n]+)/gi
+    ];
+    for (var i = 0; i < linkedinPatterns.length; i++) {
+        var linkedinMatch = text.match(linkedinPatterns[i]);
+        if (linkedinMatch) {
+            var linkedinUrl = linkedinMatch[0];
+            if (!linkedinUrl.startsWith('http')) {
+                linkedinUrl = 'https://' + linkedinUrl;
+            }
+            extracted.linkedin = linkedinUrl;
+            break;
+        }
+    }
+    
+    // Extract GitHub
+    var githubPatterns = [
+        /(github\.com\/[a-zA-Z0-9_-]+)/gi,
+        /GitHub[:\s]+(https?:\/\/[^\s\n]+)/gi
+    ];
+    for (var i = 0; i < githubPatterns.length; i++) {
+        var githubMatch = text.match(githubPatterns[i]);
+        if (githubMatch) {
+            var githubUrl = githubMatch[0];
+            if (!githubUrl.startsWith('http')) {
+                githubUrl = 'https://' + githubUrl;
+            }
+            extracted.github = githubUrl;
+            break;
+        }
+    }
+    
+    // Extract website/portfolio
+    var websitePatterns = [
+        /(https?:\/\/[a-zA-Z0-9.-]+\.[a-z]{2,})/g,
+        /Website[:\s]+(https?:\/\/[^\s\n]+)/gi,
+        /Portfolio[:\s]+(https?:\/\/[^\s\n]+)/gi
+    ];
+    for (var i = 0; i < websitePatterns.length; i++) {
+        var matches = text.match(websitePatterns[i]);
+        if (matches) {
+            for (var j = 0; j < matches.length; j++) {
+                var url = matches[j];
+                if (!url.includes('linkedin') && !url.includes('github') && 
+                    !url.includes('email') && !url.includes('Phone')) {
+                    extracted.website = url.replace(/^(Website|Portfolio)[:\s]+/i, '');
+                    break;
+                }
+            }
+            if (extracted.website) break;
+        }
+    }
+    
+    // ========================================
+    // EXTRACT NAME (usually at the very top)
+    // ========================================
+    var allLines = text.split('\n').map(function(l) { return l.trim(); }).filter(function(l) { return l && l.length > 3; });
+    
+    if (allLines.length > 0) {
+        var firstLine = allLines[0];
+        // Name is typically:
+        // 1. First line if it's 2-4 capitalized words
+        // 2. Not containing common resume keywords
+        var nameKeywords = ['experience', 'education', 'skills', 'objective', 'summary', 'contact', 'phone', 'email'];
+        var isName = true;
+        
+        for (var i = 0; i < nameKeywords.length; i++) {
+            if (firstLine.toLowerCase().includes(nameKeywords[i])) {
+                isName = false;
+                break;
+            }
+        }
+        
+        if (isName && /^([A-Z][a-z'.-]+[\s-]?){1,4}$/.test(firstLine) && firstLine.length < 60) {
+            extracted.fullname = firstLine;
+        } else if (allLines.length > 1) {
+            // Try second line
+            var secondLine = allLines[1];
+            if (/^([A-Z][a-z'.-]+[\s-]?){1,4}$/.test(secondLine) && secondLine.length < 60) {
+                extracted.fullname = secondLine;
+            }
+        }
+    }
+    
+    // ========================================
+    // SECTION-BASED PARSING
+    // ========================================
+    
+    // Common section headers in resumes - handles various formats including underlines, dashes, etc.
+    var sectionHeaders = {
+        objective: /(^|\n)\s*(objective|career objective|professional summary|summary|profile|about me|career goal)\s*[\-_–—=.#~\s]*(\n|$)/gi,
+        summary: /(^|\n)\s*(professional summary|summary|about|about me|profile)\s*[\-_–—=.#~\s]*(\n|$)/gi,
+        skills: /(^|\n)\s*(skills|technical skills|software skills|core competencies|competencies|expertise|proficiencies|technologies|tools & technologies|knowledge|literary skills)\s*[\-_–—=.#~\s]*(\n|$)/gi,
+        academicEducation: /(^|\n)\s*(academic.*?education|academic.*?qualifications?|educational.*?background)\s*[\-_–—=.#~\s]*(\n|$)/gi,
+        professionalEducation: /(^|\n)\s*(professional.*?education|professional.*?qualifications?|certifications?|training|professional development|courses?|diplomas?)\s*[\-_–—=.#~\s]*(\n|$)/gi,
+        education: /(^|\n)\s*(education|academic background|educational qualifications|qualifications|academic qualifications|educational background|academic & professional education|academic & professional)\s*[\-_–—=.#~\s]*(\n|$)/gi,
+        experience: /(^|\n)\s*(work experience|experience|professional experience|employment history|career history|work history|professional background|technical work experience)\s*[\-_–—=.#~\s]*(\n|$)/gi,
+        certifications: /(^|\n)\s*(certifications & awards|awards|honors|licenses|literary awards|awards? &? honors?)\s*[\-_–—=.#~\s]*(\n|$)/gi,
+        projects: /(^|\n)\s*(projects|key projects|major projects|selected projects|personal projects)\s*[\-_–—=.#~\s]*(\n|$)/gi,
+        languages: /(^|\n)\s*(languages|language skills|spoken languages|linguistic skills)\s*[\-_–—=.#~\s]*(\n|$)/gi,
+        otherActivities: /(^|\n)\s*(other activities|conferences|seminars|conferences? &? seminars?|workshops|volunteering|volunteer experience|extracurricular|extracurricular activities|professional activities|activities|leadership|community involvement)\s*[\-_–—=.#~\s]*(\n|$)/gi
+    };
+    
+    // Find all section positions - prioritize specific headers over generic ones
+    var sections = {};
+    var sectionPriority = ['objective', 'summary', 'academicEducation', 'professionalEducation', 'education', 
+                           'skills', 'experience', 'certifications', 'projects', 'languages', 'otherActivities'];
+    
+    for (var i = 0; i < sectionPriority.length; i++) {
+        var section = sectionPriority[i];
+        var regex = sectionHeaders[section];
+        var match;
+        var positions = [];
+        while ((match = regex.exec(text)) !== null) {
+            positions.push({
+                start: match.index + match[0].length,
+                header: match[0].trim()
+            });
+            console.log('Found section:', section, 'at position', match.index, 'header:', match[0].trim());
+        }
+        if (positions.length > 0) {
+            sections[section] = positions[0]; // Use first occurrence
+        }
+    }
+    
+    console.log('All detected sections:', Object.keys(sections));
+    
+    // Extract section content with improved boundary detection
+    function extractSectionContent(sectionName) {
+        if (!sections[sectionName]) return '';
+
+        var start = sections[sectionName].start;
+        var end = text.length;
+
+        // Find the next section by position
+        var sectionNames = Object.keys(sections);
+        for (var i = 0; i < sectionNames.length; i++) {
+            var otherSection = sectionNames[i];
+            if (sections[otherSection].start > start && sections[otherSection].start < end) {
+                end = sections[otherSection].start;
+            }
+        }
+
+        var content = text.substring(start, end).trim();
+        console.log('Section:', sectionName, '| Start:', start, '| End:', end, '| Content length:', content.length);
+        return content;
+    }
+    
+    // ========================================
+    // EXTRACT OBJECTIVE/SUMMARY
+    // ========================================
+    var objectiveContent = extractSectionContent('objective') || extractSectionContent('summary');
+    if (objectiveContent) {
+        // Clean up the content
+        objectiveContent = objectiveContent.replace(/^(objective|summary|career objective)[:\s]*/i, '').trim();
+        if (objectiveContent.length > 30) {
+            extracted.objective = objectiveContent;
+        }
+    }
+    
+    // ========================================
+    // EXTRACT SKILLS (keyword-based extraction)
+    // ========================================
+    var skillsContent = extractSectionContent('skills');
+    if (skillsContent) {
+        // Common skill separators
+        var skillItems = [];
+        
+        // Try different parsing strategies
+        // Strategy 1: Comma-separated
+        if (skillsContent.includes(',')) {
+            skillItems = skillsContent.split(/[,\n•\-–—▪▸●○■□]+/).map(function(s) { 
+                return s.trim(); 
+            }).filter(function(s) { 
+                return s && s.length > 1 && s.length < 60; 
+            });
+        } 
+        // Strategy 2: Bullet points or newlines
+        else {
+            skillItems = skillsContent.split(/[\n•\-–—▪▸●○■□]+/).map(function(s) { 
+                return s.trim(); 
+            }).filter(function(s) { 
+                return s && s.length > 1 && s.length < 60; 
+            });
+        }
+        
+        // Filter out common non-skill words
+        var skillStopWords = ['skills', 'technical', 'proficiencies', 'competencies', 'expertise', 'tools', 'technologies'];
+        skillItems = skillItems.filter(function(skill) {
+            return skillStopWords.indexOf(skill.toLowerCase()) === -1;
+        });
+        
+        // Remove proficiency level indicators from skill names
+        skillItems = skillItems.map(function(skill) {
+            return skill.replace(/\s*\((beginner|intermediate|advanced|expert|proficient|familiar|novice)\)\s*/gi, '').trim();
+        }).filter(function(s) { return s; });
+        
+        extracted.skills = skillItems.slice(0, 15).map(function(skill) {
+            // Try to detect proficiency level
+            var level = '';
+            if (/\b(expert|advanced|proficient)\b/i.test(skill)) level = 'expert';
+            else if (/\b(intermediate|proficient)\b/i.test(skill)) level = 'intermediate';
+            else if (/\b(beginner|novice|familiar)\b/i.test(skill)) level = 'beginner';
+            
+            return { 
+                name: skill.replace(/\s*\((beginner|intermediate|advanced|expert|proficient|familiar|novice)[^)]*\)\s*/gi, '').trim(),
+                level: level 
+            };
+        }).filter(function(s) { return s.name; });
+    }
+    
+    // ========================================
+    // EXTRACT EXPERIENCE (smart parsing)
+    // ========================================
+    var experienceContent = extractSectionContent('experience');
+    if (experienceContent) {
+        // Try to identify individual job entries
+        // Common patterns: Job Title at Company (Date - Date)
+        var jobPatterns = [
+            // Pattern 1: Title \n Company \n Date
+            /([A-Z][a-zA-Z\s&.,\-()]+?)[\n](.*?(?:company|corp|inc|ltd|llc|university|hospital|institute|agency|firm)[^,\n]*)[\n]((?:(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,\/\-]+)?\d{3,4}\s*[\-–—to]+\s*(?:present|current|now|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,\/\-]*\d{3,4}?))/gi,
+            // Pattern 2: Title at Company (Date)
+            /([A-Z][a-zA-Z\s&.,\-()]+?)\s+(?:at|@|,)\s+([^,\n(]+)[\s,]+(\d{4}\s*[\-–—]\s*\d{4}|present|current)/gi
+        ];
+        
+        // Split experience content by common job separators
+        var jobBlocks = experienceContent.split(/(?=\n\s*[A-Z][a-zA-Z\s]+(?:engineer|developer|manager|director|analyst|designer|specialist|consultant|coordinator|administrator|lead|head|chief|senior|junior|intern))/gi);
+        
+        if (jobBlocks.length <= 1) {
+            // Try splitting by date patterns
+            jobBlocks = experienceContent.split(/(?=(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,\/\-]+\d{4})/gi);
+        }
+        
+        jobBlocks.forEach(function(block) {
+            block = block.trim();
+            if (block.length < 20) return; // Skip very short blocks
+            
+            var job = {
+                title: '',
+                company: '',
+                start: '',
+                end: '',
+                description: ''
+            };
+            
+            // Extract dates
+            var datePatterns = [
+                /((?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,\/\-]+\d{4})\s*[\-–—to]+\s*(present|current|now|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,\/\-]*\d{4}?)/i,
+                /(\d{4})\s*[\-–—to]+\s*(\d{4}|present|current|now)/i
+            ];
+            
+            for (var i = 0; i < datePatterns.length; i++) {
+                var dateMatch = block.match(datePatterns[i]);
+                if (dateMatch) {
+                    job.start = dateMatch[1].trim();
+                    job.end = dateMatch[2] ? dateMatch[2].trim() : '';
+                    break;
+                }
+            }
+            
+            // Extract job title (first capitalized line with job-related keywords)
+            var titlePatterns = [
+                /(senior|junior|lead|head|chief|principal|staff)?\s*(software|product|project|program|marketing|sales|financial|hr|data)?\s*(engineer|developer|manager|director|analyst|designer|specialist|consultant|coordinator|administrator|architect|scientist|researcher|instructor|teacher|professor|physician|nurse|therapist)[^.^\n]*/i
+            ];
+            
+            for (var i = 0; i < titlePatterns.length; i++) {
+                var titleMatch = block.match(titlePatterns[i]);
+                if (titleMatch) {
+                    job.title = titleMatch[0].trim().replace(/[\n\r]/g, ' ');
+                    break;
+                }
+            }
+            
+            // Extract company (lines with company-related keywords)
+            var companyPatterns = [
+                /(?:at|@|,|for)\s+([A-Z][a-zA-Z\s&.,]+(?:company|corp|corporation|inc|incorporated|ltd|limited|llc|university|college|hospital|institute|agency|firm|systems|technologies|solutions|services))/i,
+                /([A-Z][a-zA-Z\s&.,]+(?:company|corp|corporation|inc|incorporated|ltd|limited|llc|university|college|hospital|institute|agency|firm|systems|technologies|solutions|services))/i
+            ];
+            
+            for (var i = 0; i < companyPatterns.length; i++) {
+                var companyMatch = block.match(companyPatterns[i]);
+                if (companyMatch) {
+                    job.company = companyMatch[1].trim();
+                    break;
+                }
+            }
+            
+            // If no clear title/company, use first two lines
+            if (!job.title || !job.company) {
+                var blockLines = block.split('\n').map(function(l) { return l.trim(); }).filter(function(l) { return l && !/^\d{4}/.test(l); });
+                if (blockLines.length >= 2 && !job.title) {
+                    job.title = blockLines[0].substring(0, 60);
+                    if (!job.company) job.company = blockLines[1].substring(0, 60);
+                } else if (blockLines.length >= 1 && !job.title) {
+                    job.title = blockLines[0].substring(0, 60);
+                }
+            }
+            
+            // Extract description (everything else)
+            var descriptionLines = block.split('\n').filter(function(line) {
+                line = line.trim();
+                return line && 
+                       line.length > 10 &&
+                       !line.toLowerCase().includes('at ') &&
+                       !line.match(/^\d{4}/) &&
+                       line !== job.title && 
+                       line !== job.company;
+            });
+            
+            job.description = descriptionLines.map(function(l) {
+                return l.replace(/^[\-\•\*\–\—\s]+/, '').trim();
+            }).filter(function(l) { return l; }).join('\n');
+            
+            if (job.title || job.company) {
+                extracted.experience.push(job);
+            }
         });
     }
     
-    // Extract experience
-    var expPattern = /([A-Z][a-z]+[\sA-Za-z]+)\n([A-Z][a-zA-Z\s&,.]+)\n((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}\s*[-–—]\s*(?:Present|Current|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}))/gi;
-    var expMatch;
-    while ((expMatch = expPattern.exec(text)) !== null) {
-        extracted.experience.push({
-            title: expMatch[1].trim(),
-            company: expMatch[2].trim(),
-            start: '',
-            end: '',
-            description: ''
-        });
+    // ========================================
+    // EXTRACT EDUCATION (handles both academic and professional education)
+    // ========================================
+    var educationContent = extractSectionContent('education');
+    var academicEduContent = extractSectionContent('academicEducation');
+    var profEduContent = extractSectionContent('professionalEducation');
+    
+    // If we have separate academic/professional sections, combine them
+    if (academicEduContent || profEduContent) {
+        educationContent = (academicEduContent ? academicEduContent + '\n' : '') + 
+                          (profEduContent ? profEduContent : '');
     }
     
-    // Extract education
-    var eduPattern = /((?:B\.?[AS]\.?|M\.?[AS]\.?|MBA|Ph\.?D|MD|JD|Ed\.?D)[\s\w.-]+)\n([A-Z][a-zA-Z\s&,.]+(?:University|College|Institute|School))/gi;
-    var eduMatch;
-    while ((eduMatch = eduPattern.exec(text)) !== null) {
-        extracted.education.push({
-            degree: eduMatch[1].trim(),
-            institution: eduMatch[2].trim(),
-            start: '',
-            end: '',
-            details: ''
+    if (educationContent) {
+        // Common degree keywords
+        var degreeKeywords = [
+            '(ph\\.?d|doctorate|doctor of philosophy)',
+            '(md|doctor of medicine)',
+            '(jd|juris doctor)',
+            '(mba|master of business administration)',
+            '(m\\.?s\\.?|master of science|ms)',
+            '(m\\.?a\\.?|master of arts|ma)',
+            '(m\\.?ed|master of education)',
+            '(m\\.?eng|master of engineering)',
+            '(m\\.?fin|master of finance)',
+            '(b\\.?s\\.?|bachelor of science|bs)',
+            '(b\\.?a\\.?|bachelor of arts|ba)',
+            '(b\\.?ed|bachelor of education)',
+            '(b\\.?tech|bachelor of technology)',
+            '(b\\.?eng|bachelor of engineering)',
+            '(b\\.?b\\.?a|bachelor of business administration)',
+            '(associate|a\\.?s\\.?|a\\.?a\\.)',
+            '(diploma|certificate|certification)'
+        ];
+        
+        // Split by degree keywords or newlines
+        var eduBlocks = educationContent.split(new RegExp('(?=' + degreeKeywords.join('|') + ')', 'gi'));
+        
+        if (eduBlocks.length <= 1) {
+            // Try splitting by institution keywords
+            eduBlocks = educationContent.split(/(?=(?:university|college|institute|school|academy))/gi);
+        }
+        
+        eduBlocks.forEach(function(block) {
+            block = block.trim();
+            if (block.length < 10) return;
+
+            var edu = {
+                degree: '',
+                institution: '',
+                start: '',
+                end: '',
+                details: ''
+            };
+
+            // Extract degree
+            var degreeRegex = new RegExp('(' + degreeKeywords.join('|') + ')[\\s\\w\\-.,&()]*', 'gi');
+            var degreeMatch = block.match(degreeRegex);
+            if (degreeMatch) {
+                edu.degree = degreeMatch[0].trim().substring(0, 80);
+            }
+
+            // Extract institution
+            var institutionRegex = /([A-Z][a-zA-Z\\s&.,]+(?:university|college|institute|school|academy|conservatory))/i;
+            var institutionMatch = block.match(institutionRegex);
+            if (institutionMatch) {
+                edu.institution = institutionMatch[1].trim().substring(0, 80);
+            }
+
+            // Extract dates
+            var dateRegex = /(\d{4})\s*[\-–—to]+\s*(\d{4}|present|current)/i;
+            var dateMatch = block.match(dateRegex);
+            if (dateMatch) {
+                edu.start = dateMatch[1];
+                edu.end = dateMatch[2];
+            }
+
+            // Extract GPA/honors
+            var gpaRegex = /(?:gpa|cgpa)[:\s]*([0-4][.\\d]+[/\\d]*)/i;
+            var honorsRegex = /(cum laude|magna cum laude|summa cum laude|honors|honor roll|dean's list)/i;
+            var details = [];
+
+            var gpaMatch = block.match(gpaRegex);
+            if (gpaMatch) details.push('GPA: ' + gpaMatch[1]);
+
+            var honorsMatch = block.match(honorsRegex);
+            if (honorsMatch) details.push(honorsMatch[1]);
+
+            edu.details = details.join(', ');
+
+            if (edu.degree || edu.institution) {
+                if (!edu.degree) edu.degree = block.split('\n')[0].trim().substring(0, 80);
+                extracted.education.push(edu);
+            }
         });
+        
+        // If no education entries were found with the degree-based approach,
+        // fall back to extracting bullet points as individual entries
+        if (extracted.education.length === 0) {
+            var eduLines = educationContent.split('\n').map(function(l) { return l.trim(); }).filter(function(l) { return l && l.length > 10; });
+            eduLines.forEach(function(line) {
+                // Skip lines that are just section headers
+                if (/^(education|academic|professional|qualifications?)/i.test(line)) return;
+                
+                var edu = {
+                    degree: '',
+                    institution: '',
+                    start: '',
+                    end: '',
+                    details: ''
+                };
+                
+                // Try to extract dates
+                var dateMatch = line.match(/((?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,\/\-]+)?(\d{4})\s*[\-–—to]+\s*(?:(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,\/\-]+)?(\d{4}|present|current)/i);
+                if (!dateMatch) {
+                    dateMatch = line.match(/(\d{4})\s*[\-–—to]+\s*(\d{4}|present|current)/i);
+                }
+                if (dateMatch) {
+                    edu.start = dateMatch[2] || dateMatch[1];
+                    edu.end = dateMatch[3] || dateMatch[2] || '';
+                }
+                
+                // Try to extract institution
+                var instMatch = line.match(/(?:from|at)\s+([A-Z][a-zA-Z\s&.,]+(?:university|college|institute|school|academy|board))/i);
+                if (instMatch) {
+                    edu.institution = instMatch[1].trim().substring(0, 80);
+                }
+                
+                // Use the whole line as degree if we couldn't parse it
+                var cleanLine = line.replace(/^[\-\•\*\–\—\s\d.]+/, '').trim();
+                edu.degree = cleanLine.substring(0, 100);
+                
+                extracted.education.push(edu);
+            });
+        }
     }
     
+    // ========================================
+    // EXTRACT CERTIFICATIONS
+    // ========================================
+    var certContent = extractSectionContent('certifications');
+    if (certContent) {
+        extracted.certifications = certContent.replace(/^(certifications?|awards|honors|licenses)[:\s]*/i, '').trim();
+    }
+    
+    // ========================================
+    // EXTRACT LANGUAGES
+    // ========================================
+    var langContent = extractSectionContent('languages');
+    if (langContent) {
+        extracted.languages = langContent.replace(/^(languages|language skills)[:\s]*/i, '').trim();
+    }
+    
+    // ========================================
+    // EXTRACT OTHER ACTIVITIES (Conferences, Seminars, etc.)
+    // ========================================
+    var activitiesContent = extractSectionContent('otherActivities');
+    if (activitiesContent) {
+        extracted.otherActivities = activitiesContent.replace(/^(other activities|conferences|seminars|conferences & seminars|workshops|volunteering|extracurricular|activities|leadership|community involvement)[:\s]*/i, '').trim();
+    }
+
+    // If no objective was found, will auto-generate later
+    console.log('Extracted data:', extracted);
+
     // Populate form with extracted data
     populateFormWithData(extracted);
 }
@@ -1635,6 +2202,7 @@ function downloadPDF() {
     var projects = document.getElementById('Projects').value || '';
     var certs = document.getElementById('Certifications').value || '';
     var languages = document.getElementById('Languages').value || '';
+    var otherActivities = document.getElementById('OtherActivities').value || '';
 
     // Auto-generate objective if blank
     if (!objective || !objective.trim()) {
@@ -1763,6 +2331,14 @@ function downloadPDF() {
         pdfHTML += '</div>';
     }
 
+    // Other Activities
+    if (otherActivities && otherActivities.trim()) {
+        pdfHTML += '<div style="margin-bottom: 12px; page-break-inside: avoid;">';
+        pdfHTML += '<h2 style="font-size: 12pt; font-weight: bold; color: #4F46E5; text-transform: uppercase; margin: 0 0 6px; letter-spacing: 0.5px;">Other Activities</h2>';
+        pdfHTML += toCleanList(otherActivities);
+        pdfHTML += '</div>';
+    }
+
     pdfHTML += '</div>';
 
     // Create visible overlay for PDF generation
@@ -1783,7 +2359,7 @@ function downloadPDF() {
     // Wait for rendering, then generate PDF
     setTimeout(function() {
         html2pdf().set({
-            margin: [25.4, 25.4, 25.4, 25.4], // [top, right, bottom, left] in mm - 1 inch all sides
+            margin: [25.4, 38.1, 25.4, 25.4], // [top, left, bottom, right] in mm - Top: 1", Left: 1.5", Bottom: 1", Right: 1"
             filename: userName + '_resume.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: {
@@ -1878,7 +2454,8 @@ function downloadDoc() {
     addSection('Projects', document.getElementById('Projects').value);
     addSection('Certifications', document.getElementById('Certifications').value);
     addSection('Languages', document.getElementById('Languages').value);
-    
+    addSection('Other Activities', document.getElementById('OtherActivities').value);
+
     var doc = new docx.Document({ sections: [{ children: children }] });
     docx.Packer.toBlob(doc).then(function(blob) {
         saveAs(blob, userName + '_resume.docx');
@@ -1959,6 +2536,7 @@ function generateResume() {
     var projects = document.getElementById('Projects').value;
     var certs = document.getElementById('Certifications').value;
     var languages = document.getElementById('Languages').value;
+    var otherActivities = document.getElementById('OtherActivities').value;
 
     // Auto-generate objective if blank
     if (!objective || !objective.trim()) {
@@ -2076,6 +2654,7 @@ function generateResume() {
         if (projects) html += '<h3>Projects:</h3>' + toList(projects);
         if (certs) html += '<h3>Certifications & Awards:</h3>' + toList(certs);
         if (languages) html += '<h3>Languages:</h3>' + toList(languages);
+        if (otherActivities) html += '<h3>Other Activities:</h3>' + toList(otherActivities);
         html += '</div>';
         resumeOutput.innerHTML = '<h3 style="text-align:center;color:#6B7280;font-size:0.875rem;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;">📄 Your Resume Preview</h3>' + html;
         uniqueUrlElement.textContent = generateUniqueUrl(userName);

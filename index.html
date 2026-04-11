@@ -701,6 +701,24 @@
         </div>
       </fieldset>
 
+      <!-- Other Activities -->
+      <fieldset>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          Other Activities <span class="optional-field">(Optional)</span>
+        </legend>
+        <div class="form-group">
+          <label for="OtherActivities">Conferences, Seminars & Activities</label>
+          <textarea id="OtherActivities" name="OtherActivities" placeholder="e.g., International Tech Conference 2023 - Speaker&#10;Webinar on AI in Healthcare - Attendee&#10;Volunteer at Local Coding Bootcamp&#10;Hackathon Winner - TechCrunch Disrupt 2022"></textarea>
+          <span class="error-message" id="OtherActivities-error"></span>
+        </div>
+      </fieldset>
+
       <div class="button-group">
         <button type="button" id="generate-btn" onclick="generateResume()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
