@@ -15,6 +15,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://unpkg.com/docx@8.2.2/build/index.umd.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <!-- QR Code Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- Resume Upload Parsing Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 
 <body>
@@ -35,8 +40,8 @@
         <a href="#builder" class="nav-link">Builder</a>
         <a href="#features" class="nav-link">Features</a>
         <a href="#how-it-works" class="nav-link">How It Works</a>
-        <button type="button" class="nav-link demo-btn" id="demo-btn-header">Demo</button>
-        <button type="button" class="dark-mode-toggle" id="dark-mode-toggle" aria-label="Toggle dark mode">
+        <button type="button" class="nav-link demo-btn" id="demo-btn-header" onclick="loadDemoResume()">Demo</button>
+        <button type="button" class="dark-mode-toggle" id="dark-mode-toggle" onclick="toggleMode()" aria-label="Toggle dark mode">
           <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="5"></circle>
             <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -69,7 +74,7 @@
           </svg>
           Build My Resume Now
         </a>
-        <button type="button" class="btn btn-outline" id="demo-btn">
+        <button type="button" class="btn btn-outline" id="demo-btn" onclick="loadDemoResume()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <polygon points="10 8 16 12 10 16 10 8"></polygon>
@@ -100,6 +105,214 @@
     <p class="section-subtitle">Fill in your details below and watch your professional resume come to life!</p>
 
     <form id="resume-form">
+      <!-- Template Selector & Customization Panel -->
+      <fieldset class="customization-panel">
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="3" y1="9" x2="21" y2="9"></line>
+            <line x1="9" y1="21" x2="9" y2="9"></line>
+          </svg>
+          Template & Customization
+        </legend>
+
+        <!-- Resume Template Selector -->
+        <div class="form-group">
+          <label for="template-selector">Resume Template</label>
+          <select id="template-selector" class="custom-select">
+            <option value="modern">Modern - Clean & Professional</option>
+            <option value="classic">Classic - Traditional & Elegant</option>
+            <option value="minimal">Minimal - Simple & Focused</option>
+            <option value="executive">Executive - Bold & Authoritative</option>
+          </select>
+        </div>
+
+        <!-- Industry Selector -->
+        <div class="form-group">
+          <label for="industry-selector">Industry</label>
+          <select id="industry-selector" class="custom-select">
+            <option value="general">General / All Industries</option>
+            <option value="tech">Technology & Software</option>
+            <option value="design">Design & Creative</option>
+            <option value="finance">Finance & Banking</option>
+            <option value="healthcare">Healthcare & Medical</option>
+            <option value="education">Education & Academia</option>
+            <option value="marketing">Marketing & Communications</option>
+          </select>
+        </div>
+
+        <!-- Typography Options -->
+        <div class="customization-row">
+          <div class="form-group">
+            <label for="font-selector">Font Family</label>
+            <select id="font-selector" class="custom-select">
+              <option value="Inter">Inter (Default)</option>
+              <option value="Roboto">Roboto</option>
+              <option value="Open Sans">Open Sans</option>
+              <option value="Lato">Lato</option>
+              <option value="Montserrat">Montserrat</option>
+              <option value="Poppins">Poppins</option>
+              <option value="Georgia">Georgia (Serif)</option>
+              <option value="Garamond">Garamond (Serif)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="font-size-selector">Font Size</label>
+            <select id="font-size-selector" class="custom-select">
+              <option value="small">Small (13px)</option>
+              <option value="medium" selected>Medium (15px)</option>
+              <option value="large">Large (17px)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Color Theme Customization -->
+        <div class="form-group">
+          <label>Color Theme</label>
+          <div class="color-theme-container">
+            <div class="color-option">
+              <input type="radio" id="theme-indigo" name="color-theme" value="indigo" checked>
+              <label for="theme-indigo" class="color-swatch" style="background: linear-gradient(135deg, #4F46E5, #6366F1);" title="Indigo"></label>
+            </div>
+            <div class="color-option">
+              <input type="radio" id="theme-emerald" name="color-theme" value="emerald">
+              <label for="theme-emerald" class="color-swatch" style="background: linear-gradient(135deg, #059669, #10B981);" title="Emerald"></label>
+            </div>
+            <div class="color-option">
+              <input type="radio" id="theme-rose" name="color-theme" value="rose">
+              <label for="theme-rose" class="color-swatch" style="background: linear-gradient(135deg, #E11D48, #F43F5E);" title="Rose"></label>
+            </div>
+            <div class="color-option">
+              <input type="radio" id="theme-amber" name="color-theme" value="amber">
+              <label for="theme-amber" class="color-swatch" style="background: linear-gradient(135deg, #D97706, #F59E0B);" title="Amber"></label>
+            </div>
+            <div class="color-option">
+              <input type="radio" id="theme-sky" name="color-theme" value="sky">
+              <label for="theme-sky" class="color-swatch" style="background: linear-gradient(135deg, #0284C7, #0EA5E9);" title="Sky Blue"></label>
+            </div>
+            <div class="color-option">
+              <input type="radio" id="theme-purple" name="color-theme" value="purple">
+              <label for="theme-purple" class="color-swatch" style="background: linear-gradient(135deg, #7C3AED, #A78BFA);" title="Purple"></label>
+            </div>
+            <div class="color-option">
+              <input type="radio" id="theme-slate" name="color-theme" value="slate">
+              <label for="theme-slate" class="color-swatch" style="background: linear-gradient(135deg, #475569, #64748B);" title="Slate"></label>
+            </div>
+            <div class="color-option">
+              <input type="radio" id="theme-custom" name="color-theme" value="custom">
+              <label for="theme-custom" class="color-swatch color-swatch-custom" title="Custom Color">
+                <input type="color" id="custom-color-picker" value="#4F46E5">
+              </label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Word Count & Stats Bar -->
+      <div class="stats-bar" id="stats-bar">
+        <div class="stat-item">
+          <span class="stat-icon">📝</span>
+          <span class="stat-label">Words:</span>
+          <span class="stat-value" id="word-count">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">🔤</span>
+          <span class="stat-label">Characters:</span>
+          <span class="stat-value" id="char-count">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">📄</span>
+          <span class="stat-label">Est. Pages:</span>
+          <span class="stat-value" id="page-count">1</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">⏱️</span>
+          <span class="stat-label">Read Time:</span>
+          <span class="stat-value" id="read-time">0s</span>
+        </div>
+      </div>
+
+      <!-- ATS Score Indicator -->
+      <div class="ats-score-container" id="ats-score-container">
+        <div class="ats-score-header">
+          <span class="ats-score-title">📊 ATS Optimization Score</span>
+          <span class="ats-score-value" id="ats-score-value">0%</span>
+        </div>
+        <div class="ats-progress-bar">
+          <div class="ats-progress-fill" id="ats-progress-fill" style="width: 0%;"></div>
+        </div>
+        <div class="ats-tips" id="ats-tips">
+          <div class="ats-tip-item">
+            <span class="ats-tip-icon">💡</span>
+            <span class="ats-tip-text">Start filling your details to see ATS optimization suggestions</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resume Upload Section -->
+      <div class="resume-upload-container" id="resume-upload-container">
+        <fieldset class="upload-fieldset">
+          <legend>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Upload Existing Resume
+          </legend>
+          <div class="upload-description">
+            <p>Upload your current resume in DOC, DOCX, or PDF format and we'll automatically extract and populate your information.</p>
+          </div>
+          <div class="upload-area" id="upload-area">
+            <input type="file" id="resume-upload" accept=".doc,.docx,.pdf" style="display: none;">
+            <div class="upload-dropzone" id="upload-dropzone" onclick="document.getElementById('resume-upload').click()">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <p class="upload-text">Click to upload or drag and drop</p>
+              <p class="upload-formats">Accepted formats: DOC, DOCX, PDF (Max 10MB)</p>
+            </div>
+          </div>
+          <div class="upload-progress" id="upload-progress" style="display: none;">
+            <div class="upload-progress-bar">
+              <div class="upload-progress-fill" id="upload-progress-fill"></div>
+            </div>
+            <p class="upload-status" id="upload-status">Processing your resume...</p>
+          </div>
+          <div class="upload-result" id="upload-result" style="display: none;">
+            <p class="upload-result-text"></p>
+            <button type="button" class="btn-upload-clear" onclick="clearUploadedResume()">Clear & Start Over</button>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- Industry Sample Data Buttons -->
+      <div class="industry-samples-container">
+        <h3 class="industry-samples-title">📝 Quick Start: Load Sample Resume Data</h3>
+        <div class="industry-samples-grid">
+          <button type="button" class="btn-industry-sample" onclick="loadIndustrySample('technology')">
+            💻 Technology
+          </button>
+          <button type="button" class="btn-industry-sample" onclick="loadIndustrySample('healthcare')">
+            🏥 Healthcare
+          </button>
+          <button type="button" class="btn-industry-sample" onclick="loadIndustrySample('finance')">
+            💰 Finance
+          </button>
+          <button type="button" class="btn-industry-sample" onclick="loadIndustrySample('design')">
+            🎨 Design
+          </button>
+          <button type="button" class="btn-industry-sample" onclick="loadIndustrySample('education')">
+            📚 Education
+          </button>
+          <button type="button" class="btn-industry-sample" onclick="loadIndustrySample('marketing')">
+            📈 Marketing
+          </button>
+        </div>
+      </div>
+
       <!-- Personal Information -->
       <fieldset>
         <legend>
@@ -123,6 +336,12 @@
           </div>
         </div>
 
+        <div class="form-group">
+          <label for="objective">Career Objective <span class="required">*</span></label>
+          <textarea id="objective" name="objective" rows="3" placeholder="e.g., Seeking a challenging role in software development where I can leverage my skills to build impactful products..." required></textarea>
+          <span class="error-message" id="objective-error"></span>
+        </div>
+
         <div class="form-row">
           <div class="form-group">
             <label for="email">Email Address <span class="required">*</span></label>
@@ -140,6 +359,44 @@
           <label for="address">Residential Address <span class="required">*</span></label>
           <textarea id="address" name="address" placeholder="e.g., 123 Main Street, San Francisco, CA 94102" required></textarea>
           <span class="error-message" id="address-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+            Professional Links <span class="optional">(Optional)</span>
+          </label>
+          <div class="social-links-grid">
+            <div class="social-link-input">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+              <input type="url" id="linkedin" name="linkedin" placeholder="LinkedIn URL">
+            </div>
+            <div class="social-link-input">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+              <input type="url" id="github" name="github" placeholder="GitHub URL">
+            </div>
+            <div class="social-link-input">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <input type="url" id="website" name="website" placeholder="Personal Website URL">
+            </div>
+            <div class="social-link-input">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+              </svg>
+              <input type="url" id="twitter" name="twitter" placeholder="Twitter/X URL">
+            </div>
+          </div>
         </div>
 
         <div class="form-group">
@@ -163,8 +420,58 @@
           Skills
         </legend>
         <div class="form-group">
-          <label for="skills">Your Professional Skills</label>
-          <textarea id="skills" name="skills" placeholder="e.g., JavaScript, React, Node.js, Python, Project Management, Communication..." required></textarea>
+          <label>Your Professional Skills <span class="required">*</span></label>
+          <div class="skills-container" id="skills-container">
+            <div class="skill-entry" data-skill="1">
+              <div class="skill-name-input">
+                <input type="text" placeholder="e.g., JavaScript" class="skill-name">
+              </div>
+              <div class="skill-rating-select">
+                <select class="skill-level">
+                  <option value="">Select Level</option>
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                  <option value="expert">Expert</option>
+                </select>
+              </div>
+            </div>
+            <div class="skill-entry" data-skill="2">
+              <div class="skill-name-input">
+                <input type="text" placeholder="e.g., React" class="skill-name">
+              </div>
+              <div class="skill-rating-select">
+                <select class="skill-level">
+                  <option value="">Select Level</option>
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                  <option value="expert">Expert</option>
+                </select>
+              </div>
+            </div>
+            <div class="skill-entry" data-skill="3">
+              <div class="skill-name-input">
+                <input type="text" placeholder="e.g., Python" class="skill-name">
+              </div>
+              <div class="skill-rating-select">
+                <select class="skill-level">
+                  <option value="">Select Level</option>
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                  <option value="expert">Expert</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="add-entry-btn" onclick="addSkill()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Skill
+          </button>
           <span class="error-message" id="skills-error"></span>
         </div>
       </fieldset>
@@ -178,16 +485,100 @@
           </svg>
           Education & Qualifications
         </legend>
-        
+
         <div class="form-group">
-          <label for="Qualification">Academic Qualification</label>
-          <textarea id="Qualification" name="Qualification" placeholder="e.g., B.S. Computer Science, Stanford University (2020)" required></textarea>
+          <label>Academic Qualification <span class="required">*</span></label>
+          <div class="entry-container" id="education-container">
+            <div class="entry-item" data-entry="1">
+              <div class="entry-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="entry-number">1</span>
+                  <span class="entry-title">Education Entry</span>
+                </div>
+                <button type="button" class="remove-entry-btn" onclick="removeEntry(this, 'education-container')" style="display: none;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Remove
+                </button>
+              </div>
+              <div class="entry-row">
+                <div class="entry-form-group">
+                  <label>Degree / Certificate</label>
+                  <input type="text" placeholder="e.g., B.S. Computer Science" class="education-degree">
+                </div>
+                <div class="entry-form-group">
+                  <label>Institution</label>
+                  <input type="text" placeholder="e.g., Stanford University" class="education-institution">
+                </div>
+              </div>
+              <div class="entry-row">
+                <div class="entry-form-group">
+                  <label>Start Date</label>
+                  <input type="text" placeholder="e.g., 2016" class="education-start">
+                </div>
+                <div class="entry-form-group">
+                  <label>End Date</label>
+                  <input type="text" placeholder="e.g., 2020 or Present" class="education-end">
+                </div>
+              </div>
+              <div class="entry-form-group">
+                <label>Additional Details (Optional)</label>
+                <textarea placeholder="e.g., GPA: 3.8/4.0, Dean's List, Relevant coursework" class="education-details" rows="2"></textarea>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="add-entry-btn" onclick="addEducation()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Education
+          </button>
           <span class="error-message" id="Qualification-error"></span>
         </div>
 
-        <div class="form-group">
-          <label for="education">Professional Qualification</label>
-          <textarea id="education" name="education" placeholder="e.g., AWS Certified Solutions Architect, Google Analytics Certified" required></textarea>
+        <div class="form-group" style="margin-top: 24px;">
+          <label>Professional Qualification</label>
+          <div class="entry-container" id="certification-education-container">
+            <div class="entry-item" data-entry="1">
+              <div class="entry-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="entry-number">1</span>
+                  <span class="entry-title">Certification Entry</span>
+                </div>
+                <button type="button" class="remove-entry-btn" onclick="removeEntry(this, 'certification-education-container')" style="display: none;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Remove
+                </button>
+              </div>
+              <div class="entry-row">
+                <div class="entry-form-group">
+                  <label>Certification Name</label>
+                  <input type="text" placeholder="e.g., AWS Solutions Architect" class="cert-name">
+                </div>
+                <div class="entry-form-group">
+                  <label>Issuing Organization</label>
+                  <input type="text" placeholder="e.g., Amazon Web Services" class="cert-issuer">
+                </div>
+              </div>
+              <div class="entry-form-group">
+                <label>Date Earned</label>
+                <input type="text" placeholder="e.g., 2023" class="cert-date">
+              </div>
+            </div>
+          </div>
+          <button type="button" class="add-entry-btn" onclick="addCertificationEducation()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Certification
+          </button>
           <span class="error-message" id="education-error"></span>
         </div>
       </fieldset>
@@ -202,8 +593,60 @@
           Work Experience
         </legend>
         <div class="form-group">
-          <label for="Experience">Your Work Experience <span class="required">*</span></label>
-          <textarea id="Experience" name="Experience" placeholder="e.g., Software Engineer at TechCorp (2020-2024)&#10;- Led development of web applications&#10;- Managed team of 5 developers" required></textarea>
+          <label>Your Work Experience <span class="required">*</span></label>
+          <div class="entry-container" id="experience-container">
+            <div class="entry-item" data-entry="1">
+              <div class="entry-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="entry-number">1</span>
+                  <span class="entry-title">Experience Entry</span>
+                </div>
+                <button type="button" class="remove-entry-btn" onclick="removeEntry(this, 'experience-container')" style="display: none;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Remove
+                </button>
+              </div>
+              <div class="entry-row">
+                <div class="entry-form-group">
+                  <label>Job Title</label>
+                  <input type="text" placeholder="e.g., Senior Software Engineer" class="exp-title">
+                </div>
+                <div class="entry-form-group">
+                  <label>Company</label>
+                  <input type="text" placeholder="e.g., TechCorp Inc." class="exp-company">
+                </div>
+              </div>
+              <div class="entry-row">
+                <div class="entry-form-group">
+                  <label>Start Date</label>
+                  <input type="date" class="exp-start-date" onchange="detectEmploymentGaps()">
+                </div>
+                <div class="entry-form-group">
+                  <label>End Date</label>
+                  <div class="date-with-present">
+                    <input type="date" class="exp-end-date" onchange="detectEmploymentGaps()">
+                    <label class="checkbox-inline">
+                      <input type="checkbox" class="exp-current-position" onchange="detectEmploymentGaps()"> Current
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="entry-form-group">
+                <label>Description & Achievements</label>
+                <textarea placeholder="e.g., &#10;- Led development of scalable web applications&#10;- Managed team of 5 developers&#10;- Reduced application load time by 40%" class="exp-description" rows="4"></textarea>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="add-entry-btn" onclick="addExperience()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Experience
+          </button>
           <span class="error-message" id="Experience-error"></span>
         </div>
       </fieldset>
@@ -259,13 +702,13 @@
       </fieldset>
 
       <div class="button-group">
-        <button type="button" id="generate-btn">
+        <button type="button" id="generate-btn" onclick="generateResume()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
           </svg>
           Generate Resume
         </button>
-        <button type="button" id="clear-btn" class="btn-secondary">
+        <button type="button" id="clear-btn" class="btn-secondary" onclick="clearForm()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"></polyline>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -274,6 +717,105 @@
         </button>
       </div>
     </form>
+
+    <!-- Cover Letter Generator -->
+    <section class="cover-letter-section" id="cover-letter-section" style="display: none;">
+      <fieldset>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          Cover Letter Generator
+        </legend>
+        <div class="form-group">
+          <label for="cover-job-title">Job Title You're Applying For</label>
+          <input type="text" id="cover-job-title" placeholder="e.g., Senior Software Engineer">
+        </div>
+        <div class="form-group">
+          <label for="cover-company">Company Name</label>
+          <input type="text" id="cover-company" placeholder="e.g., Google">
+        </div>
+        <div class="form-group">
+          <label for="cover-hiring-manager">Hiring Manager Name (Optional)</label>
+          <input type="text" id="cover-hiring-manager" placeholder="e.g., Ms. Johnson or leave blank for 'Hiring Manager'">
+        </div>
+        <div class="form-group">
+          <label for="cover-additional-info">Additional Points to Highlight (Optional)</label>
+          <textarea id="cover-additional-info" rows="3" placeholder="Any specific achievements, skills, or experiences you want to emphasize..."></textarea>
+        </div>
+        <button type="button" id="generate-cover-letter-btn" class="btn-secondary" onclick="generateCoverLetter()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          Generate Cover Letter
+        </button>
+      </fieldset>
+      <div id="cover-letter-output" class="cover-letter-output" style="display: none;"></div>
+      <div class="cover-letter-actions" id="cover-letter-actions" style="display: none;">
+        <button type="button" class="btn-secondary" onclick="downloadCoverLetterPDF()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+          Download Cover Letter PDF
+        </button>
+        <button type="button" class="btn-secondary" onclick="copyCoverLetter()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Copy to Clipboard
+        </button>
+      </div>
+    </section>
+
+    <!-- GDPR Compliance & Privacy Controls -->
+    <section class="gdpr-section" id="gdpr-section">
+      <fieldset class="gdpr-fieldset">
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          Privacy & Data Controls
+        </legend>
+        <div class="gdpr-consent-container">
+          <label class="gdpr-checkbox-label">
+            <input type="checkbox" id="gdpr-consent" required>
+            <span class="gdpr-checkbox-text">
+              <strong>I consent to my resume data being stored locally in my browser.</strong>
+              This resume builder stores your data only on your device using localStorage. No data is sent to any server. You can delete all data at any time.
+              <a href="#privacy-details" class="privacy-link">Learn more about our privacy practices</a>.
+            </span>
+          </label>
+        </div>
+        <div class="gdpr-controls">
+          <button type="button" class="btn-secondary btn-sm" onclick="exportMyData()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Export My Data
+          </button>
+          <button type="button" class="btn-secondary btn-sm btn-danger" onclick="deleteAllData()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            Delete All My Data
+          </button>
+        </div>
+        <div id="privacy-details" class="privacy-details" style="display: none;">
+          <h4>What Data We Store</h4>
+          <ul>
+            <li>All resume content you enter (personal info, skills, education, experience)</li>
+            <li>Your selected template, font, and color preferences</li>
+            <li>Usage statistics (stored locally only)</li>
+          </ul>
+          <h4>What We DON'T Store</h4>
+          <ul>
+            <li>No server-side storage of any kind</li>
+            <li>No tracking cookies or analytics sent to third parties</li>
+            <li>No profile photos stored on servers (stored locally only)</li>
+          </ul>
+          <h4>Your Rights</h4>
+          <ul>
+            <li><strong>Right to Access:</strong> Export all your data anytime using the button above</li>
+            <li><strong>Right to Erasure:</strong> Delete all your data instantly using the button above</li>
+            <li><strong>Right to Portability:</strong> Your data is stored in standard JSON format for easy transfer</li>
+          </ul>
+        </div>
+      </fieldset>
+    </section>
 
     <!-- Resume Output -->
     <div id="resumeOutput" style="display: none;">
@@ -336,6 +878,82 @@
           </svg>
           Share via Email
         </button>
+        <button id="download-json-btn" class="btn-download">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          Export JSON Resume
+        </button>
+        <button id="toggle-cover-letter-btn" class="btn-download" onclick="toggleCoverLetterSection()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          Generate Cover Letter
+        </button>
+      </div>
+
+      <!-- QR Code -->
+      <div class="qr-code-container" id="qr-code-container" style="display: none;">
+        <h4 style="margin: 24px 0 12px; color: var(--text-primary);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 6px;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          QR Code - Scan to View Resume
+        </h4>
+        <div id="qr-code"></div>
+        <button type="button" class="btn-secondary btn-sm" onclick="downloadQRCode()" style="margin-top: 12px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download QR Code
+        </button>
+      </div>
+
+      <!-- Employment Gap Warning -->
+      <div class="gap-warning-container" id="gap-warning-container" style="display: none;">
+        <div class="gap-warning">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <span id="gap-warning-text"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analytics Dashboard -->
+    <div id="analytics-container" class="analytics-container" style="display: none;">
+      <h3 style="margin-bottom: 16px; color: var(--text-primary);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        Resume Analytics
+      </h3>
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <div class="analytics-icon">📊</div>
+          <h4>Resume Views</h4>
+          <div class="analytics-value" id="analytics-views">0</div>
+          <p class="analytics-label">times generated</p>
+        </div>
+        <div class="analytics-card">
+          <div class="analytics-icon">📥</div>
+          <h4>Downloads</h4>
+          <div class="analytics-value" id="analytics-downloads">0</div>
+          <p class="analytics-label">total downloads</p>
+        </div>
+        <div class="analytics-card">
+          <div class="analytics-icon">⏱️</div>
+          <h4>Last Updated</h4>
+          <div class="analytics-value" id="analytics-last-updated">-</div>
+          <p class="analytics-label">session timestamp</p>
+        </div>
+        <div class="analytics-card">
+          <div class="analytics-icon">📈</div>
+          <h4>ATS Score</h4>
+          <div class="analytics-value" id="analytics-ats-score">0%</div>
+          <p class="analytics-label">optimization level</p>
+        </div>
+      </div>
+      <div class="analytics-progress-section">
+        <h4>Completion Progress</h4>
+        <div class="analytics-progress-bar">
+          <div class="analytics-progress-fill" id="analytics-progress-fill" style="width: 0%;"></div>
+        </div>
+        <p class="analytics-progress-text" id="analytics-progress-text">0% complete</p>
       </div>
     </div>
   </section>
@@ -490,6 +1108,12 @@
       </div>
     </div>
   </section>
+
+  <!-- Auto-Save Indicator -->
+  <div class="auto-save-indicator" id="auto-save-indicator">
+    <div class="auto-save-spinner" id="auto-save-spinner" style="display: none;"></div>
+    <span id="auto-save-text">Saving...</span>
+  </div>
 
   <!-- Footer -->
   <footer class="site-footer">

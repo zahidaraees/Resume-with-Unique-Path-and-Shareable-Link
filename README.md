@@ -74,17 +74,59 @@
 
 ## 🚀 Features
 
+### ✨ **NEW: Professional Features (Latest Update)**
+
+#### 📊 **ATS Optimization System**
+- **Real-time ATS Score** - See how well your resume is optimized for Applicant Tracking Systems
+- **Smart Suggestions** - Get actionable tips to improve your resume's ATS compatibility
+- **Progress Tracking** - Visual progress bar shows optimization level (0-100%)
+- **Action Verb Detection** - Ensures you're using powerful verbs that recruiters look for
+- **Field Completion Analysis** - Identifies missing critical sections
+
+#### 🔄 **Dynamic Entry Management**
+- **Multiple Work Experiences** - Add unlimited job positions with structured fields
+- **Multiple Education Entries** - List all your academic qualifications separately
+- **Professional Certifications** - Track each certification with issuer and date
+- **Skill Entries with Levels** - Rate each skill (Beginner, Intermediate, Advanced, Expert)
+- **Add/Remove Functionality** - Easily manage entries with intuitive controls
+- **Auto-numbering** - Entries are automatically numbered and organized
+
+#### 💾 **Auto-Save & Draft Recovery**
+- **Real-time Saving** - Your work is automatically saved as you type
+- **Browser Storage** - All data stays in your browser for privacy
+- **Session Recovery** - Resume where you left off, even after closing the browser
+- **Visual Indicator** - See save status with the animated indicator
+- **Manual Clear** - Full control to clear data when needed
+
+#### 🌐 **Professional Links Integration**
+- **LinkedIn URL** - Link to your professional profile
+- **GitHub Profile** - Showcase your code repositories
+- **Personal Website** - Link to your portfolio or blog
+- **Twitter/X Profile** - Add your social media presence
+- **Icon-based Inputs** - Beautiful, intuitive link entry
+
+#### ⭐ **Skills Rating System**
+- **4 Proficiency Levels** - Beginner, Intermediate, Advanced, Expert
+- **Color-coded Badges** - Visual indicators for skill levels
+- **Unlimited Skills** - Add as many skills as you need
+- **Professional Display** - Skills show levels in the generated resume
+- **ATS-friendly Format** - Skills are formatted for maximum compatibility
+
+### 🎯 **Core Features**
+
 - **🎯 Dynamic Resume Generation** — Create professional resumes instantly with a clean, modern interface
+- **📝 Career Objective Section** — Add a professional objective statement at the top of your resume
 - **🔗 Unique Shareable Links** — Get a unique URL for each resume to share with recruiters effortlessly
 - **📄 Download as PDF** — Export your resume as a professionally formatted PDF document (A4 size)
 - **📝 Download as DOCX** — Export your resume as a Microsoft Word document for further editing
+- **🌐 Download as HTML** — Export your resume as a standalone HTML file
 - **📧 Email Sharing** — Share your resume directly via email with pre-formatted messages
-- **📥 Download as HTML** — Export your resume as an HTML file for offline use
 - **🖨️ Print Ready** — Print your resume directly from the browser with optimized formatting
 - **✅ Inline Form Validation** — Real-time error messages ensure accurate data entry
 - **🎨 Modern UI/UX** — Professional design with smooth animations, hover effects, and toast notifications
 - **📱 Fully Responsive** — Works seamlessly on desktop, tablet, and mobile devices
-- **👀 Demo Mode** — Try the app instantly with pre-filled sample data
+- **👀 Demo Mode** — Instantly load a sample resume to see how the app works
+- **🌙 Dark Mode Toggle** — Switch between light and dark themes (preference saved automatically)
 - **🗑️ Clear Form** — Reset all fields with a single click
 - **🌐 No Backend Required** — Completely client-side application for maximum privacy
 
