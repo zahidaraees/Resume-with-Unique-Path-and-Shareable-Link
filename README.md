@@ -116,17 +116,24 @@
 
 - **🎯 Dynamic Resume Generation** — Create professional resumes instantly with a clean, modern interface
 - **📝 Career Objective Section** — Add a professional objective statement at the top of your resume
+  - **✨ Auto-Generation** — If you leave the objective blank, the system automatically generates a professional objective based on your education, experience, and skills
+  - **🎨 Professional Styling** — Objectives are displayed with italic text, highlighted background, and a distinctive border
 - **🔗 Unique Shareable Links** — Get a unique URL for each resume to share with recruiters effortlessly
-- **📄 Download as PDF** — Export your resume as a professionally formatted PDF document (A4 size)
+- **📄 Download as PDF** — Export your resume as a professionally formatted PDF document
+  - **📏 Exact Margins** — Top: 1", Bottom: 1", Left: 1.5", Right: 1"
+  - **📖 Multi-Page Support** — Automatically continues to next page with consistent margins
+  - **🔢 Page Numbers** — Each page includes page numbers for easy navigation
+  - **🎨 High Quality** — 2x resolution for crisp, professional output
 - **📝 Download as DOCX** — Export your resume as a Microsoft Word document for further editing
-- **🌐 Download as HTML** — Export your resume as a standalone HTML file
+- **🌐 Download as HTML** — Export your resume as a standalone HTML file with embedded styles
 - **📧 Email Sharing** — Share your resume directly via email with pre-formatted messages
 - **🖨️ Print Ready** — Print your resume directly from the browser with optimized formatting
 - **✅ Inline Form Validation** — Real-time error messages ensure accurate data entry
 - **🎨 Modern UI/UX** — Professional design with smooth animations, hover effects, and toast notifications
 - **📱 Fully Responsive** — Works seamlessly on desktop, tablet, and mobile devices
 - **👀 Demo Mode** — Instantly load a sample resume to see how the app works
-- **🌙 Dark Mode Toggle** — Switch between light and dark themes (preference saved automatically)
+- **🌙 Dark Mode Toggle** — Switch between light and dark themes (preference saved automatically in localStorage)
+- **💡 Light Mode** — Clean, professional white background with dark text (default)
 - **🗑️ Clear Form** — Reset all fields with a single click
 - **🌐 No Backend Required** — Completely client-side application for maximum privacy
 
@@ -140,13 +147,14 @@ Resume Builder Pro offers **multiple export formats** to suit your needs:
 - **Format:** A4-sized PDF document
 - **Library:** html2pdf.js (html2canvas + jsPDF)
 - **Use Case:** Professional sharing, printing, emailing
-- **Features:** 
-  - Preserves exact HTML formatting with bullets and spacing
-  - Proper margins (15mm all sides)
-  - Multi-page support for long resumes
-  - High-quality output (2x resolution)
-  - Professional bullet points and section headings
-  - Page break optimization
+- **Features:**
+  - **Precise Margins:** Top: 1 inch (25.4mm), Bottom: 1 inch (25.4mm), Left: 1.5 inches (38.1mm), Right: 1 inch (25.4mm)
+  - **Multi-Page Support:** Automatically continues to next page when content exceeds one page
+  - **Page Numbers:** Each page includes "Page X of Y" footer for easy navigation
+  - **High Quality:** 2x resolution for crisp, professional output
+  - **Professional Formatting:** Preserves exact HTML formatting with bullets and spacing
+  - **Smart Page Breaks:** Avoids breaking sections in the middle (uses page-break-inside: avoid)
+  - **Objective Section:** Always included with professional italic styling
 
 ### 📝 DOCX Download
 - **Format:** Microsoft Word document (.docx)
@@ -157,14 +165,18 @@ Resume Builder Pro offers **multiple export formats** to suit your needs:
   - Preserves headings and structure
   - Bullet points for easy reading
   - Compatible with all major word processors
+  - Auto-generated objective if left blank
 
 ### 📥 HTML Download
-- **Format:** HTML file
+- **Format:** Standalone HTML file
 - **Use Case:** Web hosting, offline viewing
 - **Features:**
   - Opens in any browser
   - Can be hosted anywhere
-  - Preserves all styling
+  - Preserves all styling with embedded CSS
+  - Includes responsive design
+  - Professional print styles included
+  - Objective section with enhanced styling
 
 ### 🖨️ Print
 - **Format:** Browser print dialog
@@ -172,6 +184,90 @@ Resume Builder Pro offers **multiple export formats** to suit your needs:
 - **Features:**
   - Print-optimized layout
   - Direct to printer or save as PDF
+  - A4 size with 1-inch margins
+  - Professional formatting preserved
+
+---
+
+## 🎯 Special Features
+
+### 📝 Objective Section (Auto-Generated if Blank)
+
+The Objective section appears at the top of your resume, just below your name and contact information.
+
+**Key Features:**
+- **Manual Entry:** Write your own professional objective
+- **Auto-Generation:** Leave it blank and the system creates a professional objective based on:
+  - Your latest job title and company
+  - Your highest education degree
+  - Your top 5 skills
+- **Professional Styling:** 
+  - Italic text with highlighted background
+  - Left border accent in theme color
+  - "Auto-generated" badge when system creates the objective
+- **Best Practices:** 
+  - Write a custom objective for best results (50+ characters)
+  - Use action words and specific goals
+  - Tailor to your target role
+
+**Example Auto-Generated Objective:**
+> *"Results-driven Software Engineer with experience at TechCorp Inc. and a B.S. Computer Science from Stanford University, proficient in JavaScript, React, Node.js, Python, and AWS, seeking to leverage my expertise to drive innovation and deliver impactful solutions in a dynamic, growth-oriented organization."*
+
+---
+
+### 👀 Demo Button
+
+Instantly load a complete sample resume to see how the builder works.
+
+**How to Use:**
+1. Click the **"Demo"** button in the header or hero section
+2. Watch as all fields populate with professional sample data
+3. The resume preview updates automatically
+4. Modify any field to customize the demo
+
+**Demo Data Includes:**
+- Professional name and contact information
+- Career objective (pre-written)
+- 5 skills with proficiency levels
+- 2 work experiences with descriptions
+- Education background
+- Professional certifications
+- Projects, certifications, and languages
+
+**Perfect For:**
+- Testing the resume builder
+- Seeing formatting options
+- Understanding the layout
+- Quick demonstration
+
+---
+
+### 🌙 Mode Toggle (Light/Dark)
+
+Switch between light and dark themes to match your preference.
+
+**Features:**
+- **Light Mode (Default):** 
+  - Clean white background
+  - Dark text for readability
+  - Professional appearance
+- **Dark Mode:**
+  - Dark background (#111827)
+  - Light text for comfort
+  - Reduced eye strain
+- **Persistence:** Your choice is saved in localStorage
+- **Automatic:** Theme loads automatically on page visit
+
+**How to Toggle:**
+1. Click the sun/moon icon in the header
+2. Theme switches instantly
+3. Preference saved for next visit
+
+**Technical Details:**
+- CSS variables for consistent theming
+- Smooth transitions between modes
+- All components styled for both modes
+- No flash on page load
 
 ---
 

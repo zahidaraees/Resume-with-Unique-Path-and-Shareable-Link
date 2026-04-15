@@ -20,6 +20,8 @@
   <!-- Resume Upload Parsing Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- Industry Data Structure -->
+  <script src="industry-data.js"></script>
 </head>
 
 <body>
@@ -288,28 +290,40 @@
         </fieldset>
       </div>
 
-      <!-- Industry Sample Data Buttons -->
-      <div class="industry-samples-container">
-        <h3 class="industry-samples-title">📝 Quick Start: Load Sample Resume Data</h3>
-        <div class="industry-samples-grid">
-          <button type="button" class="btn-industry-sample" onclick="loadIndustrySample('technology')">
-            💻 Technology
-          </button>
-          <button type="button" class="btn-industry-sample" onclick="loadIndustrySample('healthcare')">
-            🏥 Healthcare
-          </button>
-          <button type="button" class="btn-industry-sample" onclick="loadIndustrySample('finance')">
-            💰 Finance
-          </button>
-          <button type="button" class="btn-industry-sample" onclick="loadIndustrySample('design')">
-            🎨 Design
-          </button>
-          <button type="button" class="btn-industry-sample" onclick="loadIndustrySample('education')">
-            📚 Education
-          </button>
-          <button type="button" class="btn-industry-sample" onclick="loadIndustrySample('marketing')">
-            📈 Marketing
-          </button>
+      <!-- Industry Quick Start - Tree Hierarchy -->
+      <div class="industry-quickstart-container" id="industry-quickstart-container">
+        <h3 class="industry-quickstart-title">🚀 Quick Start: Select Your Industry</h3>
+        <p class="industry-quickstart-subtitle">Choose your industry and subcategory to auto-populate relevant skills, keywords, and resume templates</p>
+        
+        <!-- Main Industry Grid -->
+        <div class="industry-grid" id="industry-grid">
+          <!-- Industries will be dynamically populated here -->
+        </div>
+
+        <!-- Subcategory Selection Panel (Hidden by default) -->
+        <div class="subcategory-panel" id="subcategory-panel" style="display: none;">
+          <div class="subcategory-header">
+            <button type="button" class="btn-back-to-industries" onclick="backToIndustries()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              Back to Industries
+            </button>
+            <h4 id="selected-industry-name"></h4>
+          </div>
+          <div class="subcategory-grid" id="subcategory-grid">
+            <!-- Subcategories will be dynamically populated here -->
+          </div>
+        </div>
+
+        <!-- Custom Subcategory Input -->
+        <div class="custom-subcategory-container" id="custom-subcategory-container" style="display: none;">
+          <label for="custom-subcategory-input">Enter your specific subcategory:</label>
+          <div class="custom-input-row">
+            <input type="text" id="custom-subcategory-input" placeholder="e.g., Renewable Energy Engineering">
+            <button type="button" class="btn-apply-custom" onclick="applyCustomSubcategory()">Apply & Load Skills</button>
+          </div>
+          <p class="custom-hint">Don't see your exact specialization? Enter it here and we'll load the closest matching skill set.</p>
         </div>
       </div>
 
@@ -716,6 +730,450 @@
           <label for="OtherActivities">Conferences, Seminars & Activities</label>
           <textarea id="OtherActivities" name="OtherActivities" placeholder="e.g., International Tech Conference 2023 - Speaker&#10;Webinar on AI in Healthcare - Attendee&#10;Volunteer at Local Coding Bootcamp&#10;Hackathon Winner - TechCrunch Disrupt 2022"></textarea>
           <span class="error-message" id="OtherActivities-error"></span>
+        </div>
+      </fieldset>
+
+      <!-- Professional Summary -->
+      <fieldset>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          Professional Summary <span class="optional-field">(Optional)</span>
+        </legend>
+        <div class="form-group">
+          <label for="ProfessionalSummary">Career Summary & Strengths</label>
+          <textarea id="ProfessionalSummary" name="ProfessionalSummary" rows="4" placeholder="e.g., Results-driven software engineer with 8+ years of experience building scalable web applications and leading cross-functional teams. Proven expertise in cloud architecture, microservices, and agile methodologies. Passionate about mentoring junior developers and driving technical excellence across organizations."></textarea>
+          <span class="error-message" id="ProfessionalSummary-error"></span>
+          <small class="field-hint">A brief narrative highlighting your career goals, key strengths, and major achievements (2-4 sentences recommended)</small>
+        </div>
+      </fieldset>
+
+      <!-- Volunteer Experience -->
+      <fieldset>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+          Volunteer Experience <span class="optional-field">(Optional)</span>
+        </legend>
+        <div class="form-group">
+          <label>Volunteer Roles & Community Involvement</label>
+          <div class="entry-container" id="volunteer-container">
+            <div class="entry-item" data-entry="1">
+              <div class="entry-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="entry-number">1</span>
+                  <span class="entry-title">Volunteer Entry</span>
+                </div>
+                <button type="button" class="remove-entry-btn" onclick="removeEntry(this, 'volunteer-container')" style="display: none;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Remove
+                </button>
+              </div>
+              <div class="entry-row">
+                <div class="entry-form-group">
+                  <label>Role / Position</label>
+                  <input type="text" placeholder="e.g., Mentor / Volunteer Coordinator" class="volunteer-role">
+                </div>
+                <div class="entry-form-group">
+                  <label>Organization</label>
+                  <input type="text" placeholder="e.g., Code for America" class="volunteer-org">
+                </div>
+              </div>
+              <div class="entry-row">
+                <div class="entry-form-group">
+                  <label>Start Date</label>
+                  <input type="text" placeholder="e.g., Jan 2022" class="volunteer-start">
+                </div>
+                <div class="entry-form-group">
+                  <label>End Date</label>
+                  <input type="text" placeholder="e.g., Present or Dec 2023" class="volunteer-end">
+                </div>
+              </div>
+              <div class="entry-form-group">
+                <label>Achievements & Impact</label>
+                <textarea placeholder="e.g., &#10;- Mentored 20+ students in coding fundamentals&#10;- Organized community hackathon with 150+ participants" class="volunteer-achievements" rows="3"></textarea>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="add-entry-btn" onclick="addVolunteer()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Volunteer Experience
+          </button>
+        </div>
+      </fieldset>
+
+      <!-- Publications & Research -->
+      <fieldset>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            <line x1="9" y1="7" x2="16" y2="7"></line>
+            <line x1="9" y1="11" x2="14" y2="11"></line>
+          </svg>
+          Publications & Research <span class="optional-field">(Optional)</span>
+        </legend>
+        <div class="form-group">
+          <label>Published Works & Research Papers</label>
+          <div class="entry-container" id="publications-container">
+            <div class="entry-item" data-entry="1">
+              <div class="entry-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="entry-number">1</span>
+                  <span class="entry-title">Publication Entry</span>
+                </div>
+                <button type="button" class="remove-entry-btn" onclick="removeEntry(this, 'publications-container')" style="display: none;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Remove
+                </button>
+              </div>
+              <div class="entry-form-group">
+                <label>Publication Title</label>
+                <input type="text" placeholder="e.g., Machine Learning Approaches in Healthcare" class="pub-title">
+              </div>
+              <div class="entry-row">
+                <div class="entry-form-group">
+                  <label>Journal / Conference</label>
+                  <input type="text" placeholder="e.g., Nature Medicine / IEEE Conference" class="pub-journal">
+                </div>
+                <div class="entry-form-group">
+                  <label>Publication Date</label>
+                  <input type="text" placeholder="e.g., March 2023" class="pub-date">
+                </div>
+              </div>
+              <div class="entry-form-group">
+                <label>URL / DOI (Optional)</label>
+                <input type="url" placeholder="https://doi.org/10.xxxx/xxxxx" class="pub-url">
+              </div>
+              <div class="entry-form-group">
+                <label>Brief Description (Optional)</label>
+                <textarea placeholder="e.g., Research on applying deep learning to medical imaging for early cancer detection" class="pub-description" rows="2"></textarea>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="add-entry-btn" onclick="addPublication()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Publication
+          </button>
+        </div>
+      </fieldset>
+
+      <!-- Patents & Innovations -->
+      <fieldset>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          Patents & Innovations <span class="optional-field">(Optional)</span>
+        </legend>
+        <div class="form-group">
+          <label>Patents & Innovative Solutions</label>
+          <div class="entry-container" id="patents-container">
+            <div class="entry-item" data-entry="1">
+              <div class="entry-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="entry-number">1</span>
+                  <span class="entry-title">Patent Entry</span>
+                </div>
+                <button type="button" class="remove-entry-btn" onclick="removeEntry(this, 'patents-container')" style="display: none;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Remove
+                </button>
+              </div>
+              <div class="entry-form-group">
+                <label>Patent / Innovation Title</label>
+                <input type="text" placeholder="e.g., Method for Optimizing Database Queries" class="patent-title">
+              </div>
+              <div class="entry-row">
+                <div class="entry-form-group">
+                  <label>Patent Number (Optional)</label>
+                  <input type="text" placeholder="e.g., US10,123,456B2" class="patent-number">
+                </div>
+                <div class="entry-form-group">
+                  <label>Grant / Filing Date</label>
+                  <input type="text" placeholder="e.g., June 2022" class="patent-date">
+                </div>
+              </div>
+              <div class="entry-form-group">
+                <label>Description & Impact</label>
+                <textarea placeholder="e.g., Novel algorithm reducing query execution time by 60% in distributed systems" class="patent-description" rows="3"></textarea>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="add-entry-btn" onclick="addPatent()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Patent / Innovation
+          </button>
+        </div>
+      </fieldset>
+
+      <!-- References -->
+      <fieldset>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="8.5" cy="7" r="4"></circle>
+            <line x1="20" y1="8" x2="20" y2="14"></line>
+            <line x1="23" y1="11" x2="17" y2="11"></line>
+          </svg>
+          References <span class="optional-field">(Optional)</span>
+        </legend>
+        <div class="form-group">
+          <label>Professional References</label>
+          <div class="entry-container" id="references-container">
+            <div class="entry-item" data-entry="1">
+              <div class="entry-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="entry-number">1</span>
+                  <span class="entry-title">Reference Entry</span>
+                </div>
+                <button type="button" class="remove-entry-btn" onclick="removeEntry(this, 'references-container')" style="display: none;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Remove
+                </button>
+              </div>
+              <div class="entry-row">
+                <div class="entry-form-group">
+                  <label>Full Name</label>
+                  <input type="text" placeholder="e.g., Dr. Jane Smith" class="ref-name">
+                </div>
+                <div class="entry-form-group">
+                  <label>Designation / Title</label>
+                  <input type="text" placeholder="e.g., Director of Engineering" class="ref-title">
+                </div>
+              </div>
+              <div class="entry-row">
+                <div class="entry-form-group">
+                  <label>Company / Organization</label>
+                  <input type="text" placeholder="e.g., Google Inc." class="ref-company">
+                </div>
+                <div class="entry-form-group">
+                  <label>Relationship</label>
+                  <input type="text" placeholder="e.g., Former Manager" class="ref-relationship">
+                </div>
+              </div>
+              <div class="entry-row">
+                <div class="entry-form-group">
+                  <label>Email</label>
+                  <input type="email" placeholder="e.g., jane.smith@company.com" class="ref-email">
+                </div>
+                <div class="entry-form-group">
+                  <label>Phone</label>
+                  <input type="tel" placeholder="e.g., +1 (555) 123-4567" class="ref-phone">
+                </div>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="add-entry-btn" onclick="addReference()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Reference
+          </button>
+          <small class="field-hint">Typically 2-3 professional references. Include only if requested by employer.</small>
+        </div>
+      </fieldset>
+
+      <!-- Memberships & Affiliations -->
+      <fieldset>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          Memberships & Affiliations <span class="optional-field">(Optional)</span>
+        </legend>
+        <div class="form-group">
+          <label>Professional Memberships & Associations</label>
+          <div class="entry-container" id="memberships-container">
+            <div class="entry-item" data-entry="1">
+              <div class="entry-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="entry-number">1</span>
+                  <span class="entry-title">Membership Entry</span>
+                </div>
+                <button type="button" class="remove-entry-btn" onclick="removeEntry(this, 'memberships-container')" style="display: none;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Remove
+                </button>
+              </div>
+              <div class="entry-form-group">
+                <label>Organization Name</label>
+                <input type="text" placeholder="e.g., IEEE / ACM / American Medical Association" class="member-org">
+              </div>
+              <div class="entry-row">
+                <div class="entry-form-group">
+                  <label>Role / Membership Type</label>
+                  <input type="text" placeholder="e.g., Senior Member / Board Member" class="member-role">
+                </div>
+                <div class="entry-form-group">
+                  <label>Duration</label>
+                  <input type="text" placeholder="e.g., 2018 - Present" class="member-duration">
+                </div>
+              </div>
+              <div class="entry-form-group">
+                <label>Contributions & Activities (Optional)</label>
+                <textarea placeholder="e.g., Active participant in AI Ethics committee, Speaker at annual conference 2022" class="member-activities" rows="2"></textarea>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="add-entry-btn" onclick="addMembership()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Membership
+          </button>
+        </div>
+      </fieldset>
+
+      <!-- Soft Skills -->
+      <fieldset>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          Soft Skills <span class="optional-field">(Optional)</span>
+        </legend>
+        <div class="form-group">
+          <label>Interpersonal & Professional Skills</label>
+          <div class="skills-container" id="soft-skills-container">
+            <div class="skill-entry" data-skill="1">
+              <div class="skill-name-input">
+                <input type="text" placeholder="e.g., Communication" class="skill-name">
+              </div>
+              <div class="skill-rating-select">
+                <select class="skill-level">
+                  <option value="">Select Level</option>
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                  <option value="expert">Expert</option>
+                </select>
+              </div>
+            </div>
+            <div class="skill-entry" data-skill="2">
+              <div class="skill-name-input">
+                <input type="text" placeholder="e.g., Leadership" class="skill-name">
+              </div>
+              <div class="skill-rating-select">
+                <select class="skill-level">
+                  <option value="">Select Level</option>
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                  <option value="expert">Expert</option>
+                </select>
+              </div>
+            </div>
+            <div class="skill-entry" data-skill="3">
+              <div class="skill-name-input">
+                <input type="text" placeholder="e.g., Teamwork" class="skill-name">
+              </div>
+              <div class="skill-rating-select">
+                <select class="skill-level">
+                  <option value="">Select Level</option>
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                  <option value="expert">Expert</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="add-entry-btn" onclick="addSoftSkill()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Soft Skill
+          </button>
+          <small class="field-hint">Common soft skills: Communication, Leadership, Teamwork, Adaptability, Problem Solving, Time Management</small>
+        </div>
+      </fieldset>
+
+      <!-- Portfolio / Work Samples -->
+      <fieldset>
+        <legend>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          Portfolio / Work Samples <span class="optional-field">(Optional)</span>
+        </legend>
+        <div class="form-group">
+          <label>Portfolio Links & Work Samples</label>
+          <div class="entry-container" id="portfolio-container">
+            <div class="entry-item" data-entry="1">
+              <div class="entry-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="entry-number">1</span>
+                  <span class="entry-title">Portfolio Entry</span>
+                </div>
+                <button type="button" class="remove-entry-btn" onclick="removeEntry(this, 'portfolio-container')" style="display: none;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Remove
+                </button>
+              </div>
+              <div class="entry-form-group">
+                <label>Project / Portfolio Title</label>
+                <input type="text" placeholder="e.g., GitHub Profile / Behance Portfolio" class="portfolio-title">
+              </div>
+              <div class="entry-form-group">
+                <label>URL</label>
+                <input type="url" placeholder="https://github.com/username or https://behance.net/portfolio" class="portfolio-url">
+              </div>
+              <div class="entry-form-group">
+                <label>Description (Optional)</label>
+                <textarea placeholder="e.g., Collection of 15+ open-source projects with 2K+ stars" class="portfolio-description" rows="2"></textarea>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="add-entry-btn" onclick="addPortfolio()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Portfolio Link
+          </button>
+          <small class="field-hint">Include links to GitHub, Behance, Dribbble, personal websites, or other work samples</small>
         </div>
       </fieldset>
 

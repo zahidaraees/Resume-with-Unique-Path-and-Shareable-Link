@@ -4,7 +4,11 @@
       "Bash(start *)",
       "Bash(python *)",
       "Bash(pip install *)",
-      "Bash(explorer *)"
+      "Bash(explorer *)",
+      "Bash(node *)",
+      "Bash(taskkill *)",
+      "Bash(findstr *)",
+      "Bash(dir *)"
     ]
   },
   "$version": 3

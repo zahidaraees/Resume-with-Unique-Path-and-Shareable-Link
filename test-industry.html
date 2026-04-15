@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Industry Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 40px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-bottom: 30px; }
+        .industry-card { background: white; border: 2px solid #e0e0e0; border-radius: 8px; padding: 20px; margin: 10px; display: inline-block; width: 200px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .industry-card:hover { border-color: #4F46E5; transform: translateY(-4px); box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
+        .industry-icon { font-size: 3rem; margin-bottom: 10px; }
+        .industry-name { font-weight: bold; font-size: 1rem; margin-bottom: 8px; }
+        .industry-count { font-size: 0.75rem; color: #888; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Industry Data Structure Test</h1>
+        <div id="status"></div>
+        <div id="industry-grid" style="margin-top: 30px;"></div>
+    </div>
+
+    <script src="industry-data.js"></script>
+    <script>
+        function test() {
+            var status = document.getElementById('status');
+            var grid = document.getElementById('industry-grid');
+            
+            if (!industryData) {
+                status.innerHTML = '<div class="error">❌ Industry data not loaded!</div>';
+                return;
+            }
+            
+            status.innerHTML = '<div class="success">✅ Industry data loaded successfully!</div>';
+            
+            var count = 0;
+            Object.keys(industryData).forEach(function(key) {
+                var industry = industryData[key];
+                var subCount = Object.keys(industry.subcategories).length;
+                count++;
+                
+                var card = document.createElement('div');
+                card.className = 'industry-card';
+                card.innerHTML = 
+                    '<div class="industry-icon">' + industry.icon + '</div>' +
+                    '<div class="industry-name">' + industry.name + '</div>' +
+                    '<div class="industry-count">' + subCount + ' specializations</div>';
+                
+                grid.appendChild(card);
+            });
+            
+            console.log('Total industries:', count);
+            console.log('Industry data structure:', industryData);
+        }
+        
+        test();
+    </script>
+</body>
+</html>
